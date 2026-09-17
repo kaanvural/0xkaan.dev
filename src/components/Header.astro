@@ -58,6 +58,9 @@ const isActive = (href: string) =>
   }
   .brand-emoji {
     font-size: 1.7rem; line-height: 1;
+    /* recolour the color-emoji to a flat theme-green silhouette */
+    color: transparent;
+    text-shadow: 0 0 0 var(--accent);
     transition: transform .15s;
   }
   .brand:hover .brand-emoji { transform: translateY(-2px); }
