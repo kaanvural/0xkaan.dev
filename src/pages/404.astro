@@ -4,11 +4,15 @@ import Prompt from '../components/Prompt.astro';
 import { nav } from '../data/site';
 
 // Links back into the site, home plus the two most useful nav targets.
+const notes: Record<string, string> = {
+  '/writeups': 'rooted boxes, written up',
+  '/notes': 'field notes and methodology',
+};
 const exits = [
   { href: '/', label: './', note: 'back to home' },
   ...nav
-    .filter((n) => n.href === '/writeups' || n.href === '/roadmap')
-    .map((n) => ({ href: n.href, label: `.${n.href}`, note: n.label === 'writeups' ? 'rooted boxes, written up' : 'the plan toward OSCP' })),
+    .filter((n) => n.href === '/writeups' || n.href === '/notes')
+    .map((n) => ({ href: n.href, label: `.${n.href}`, note: notes[n.href] })),
 ];
 ---
 <BaseLayout title="404">
@@ -33,7 +37,7 @@ const exits = [
 
     <hr class="hr" />
 
-    <Prompt cmd="ls -d ./ ./writeups ./roadmap" />
+    <Prompt cmd="ls -d ./ ./writeups ./notes" />
     <nav class="exits" aria-label="ways back">
       <ul>
         {exits.map((e) => (
