@@ -8,15 +8,7 @@ const isActive = (href: string) =>
 <header class="hdr">
   <div class="wrap hdr-in">
     <a class="brand" href="/" aria-label={`${site.handle} home`}>
-      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 2.4 V5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        <circle cx="12" cy="2.1" r="1.15" fill="currentColor"/>
-        <rect x="3.8" y="5.6" width="16.4" height="12.4" rx="3.2" stroke="currentColor" stroke-width="1.6"/>
-        <path d="M3.8 10.2 H2.1 M20.2 10.2 H21.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        <circle cx="9" cy="11.2" r="1.5" fill="currentColor"/>
-        <circle cx="15" cy="11.2" r="1.5" fill="currentColor"/>
-        <path d="M9 15 H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
+      <span class="brand-emoji" aria-hidden="true">👾</span>
     </a>
 
     <nav class="nav" aria-label="primary">
@@ -64,13 +56,11 @@ const isActive = (href: string) =>
     display: inline-flex; align-items: center;
     text-decoration: none;
   }
-  .brand-mark {
-    width: 30px; height: 30px; flex: 0 0 auto;
-    color: var(--accent);
-    filter: drop-shadow(0 0 5px rgba(63, 232, 114, .35));
+  .brand-emoji {
+    font-size: 1.7rem; line-height: 1;
     transition: transform .15s;
   }
-  .brand:hover .brand-mark { transform: scale(1.06); }
+  .brand:hover .brand-emoji { transform: translateY(-2px); }
   .brand:focus-visible { background: none; outline-offset: 4px; border-radius: 4px; }
 
   .nav {

@@ -1,12 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-  <rect width="24" height="24" rx="4" fill="#080b09"/>
-  <g stroke="#3fe872" stroke-width="1.5" stroke-linecap="round">
-    <path d="M12 3.2 V5.4"/>
-    <rect x="4.4" y="6" width="15.2" height="11.6" rx="3" fill="none"/>
-    <path d="M4.4 10.4 H2.8 M19.6 10.4 H21.2"/>
-    <path d="M9.2 15 H14.8"/>
-  </g>
-  <circle cx="12" cy="2.9" r="1.05" fill="#3fe872"/>
-  <circle cx="9" cy="11.3" r="1.5" fill="#3fe872"/>
-  <circle cx="15" cy="11.3" r="1.5" fill="#3fe872"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#080b09"/>
+  <text x="16" y="17" font-size="22" text-anchor="middle" dominant-baseline="central">👾</text>
 </svg>
