@@ -14,7 +14,7 @@ const {
   wide = false,
 } = Astro.props;
 
-const fullTitle = title ? `${title} · ${site.handle}` : `${site.handle}.dev, ${site.role}`;
+const fullTitle = title ? `${title} · ${site.handle}` : `${site.handle} · offensive security`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://0xkaan.dev').href;
 ---
 <!doctype html>
