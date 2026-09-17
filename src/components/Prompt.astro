@@ -1,0 +1,16 @@
+---
+// A terminal prompt line used to introduce sections.
+// Renders:  r00t@0xkaan.dev:~$ <command>
+// The implied output should match the content directly below it.
+interface Props {
+  cmd: string;
+  path?: string;
+  cursor?: boolean;
+  user?: string;
+}
+const { cmd, path = '~', cursor = false, user = 'r00t' } = Astro.props;
+---
+<p class="prompt">
+  <span class="u">{user}@0xkaan.dev</span><span class="p">:{path}$</span>
+  <span class="c">{cmd}</span>{cursor && <span class="cursor" aria-hidden="true"></span>}
+</p>

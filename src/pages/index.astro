@@ -1,0 +1,197 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Prompt from '../components/Prompt.astro';
+import WriteupCard from '../components/WriteupCard.astro';
+import { site, stats } from '../data/site';
+import banner from '../data/banner.txt?raw';
+
+const readMin = (body = '') => Math.max(1, Math.round(body.split(/\s+/).length / 200));
+
+const wu = (await getCollection('writeups', (e) => !e.data.draft))
+  .sort((a, b) => +b.data.date - +a.data.date);
+const notes = (await getCollection('notes', (e) => !e.data.draft))
+  .sort((a, b) => +b.data.date - +a.data.date);
+
+const fileFor = (id: string) => id.replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+
+// Build the "latest" feed: 2 writeups + 1 note, newest-first flavored.
+const latest = [
+  ...wu.slice(0, 2).map((e) => ({
+    href: `/writeups/${e.id}`,
+    file: `${e.data.platform.toLowerCase()}_${fileFor(e.data.box || e.id)}.md`,
+    title: e.data.title, platform: e.data.platform, os: e.data.os,
+    difficulty: e.data.difficulty, date: e.data.date, tags: e.data.tags,
+    summary: e.data.summary, readMin: readMin(e.body),
+  })),
+  ...notes.slice(0, 1).map((e) => ({
+    href: `/notes/${e.id}`,
+    file: `${fileFor(e.id)}.md`,
+    title: e.data.title, platform: 'note', date: e.data.date,
+    tags: e.data.tags, summary: e.data.summary, readMin: readMin(e.body),
+  })),
+];
+
+---
+<BaseLayout>
+  <!-- ===== HERO ===== -->
+  <section class="hero" aria-labelledby="who">
+    <div class="boot" id="boot" aria-hidden="true">
+      <span>[<span class="amber">0.0021</span>] bios: amber phosphor driver loaded [ ok ]</span>
+      <span>[<span class="amber">0.1174</span>] mount /home/kaan on /dev/notebook [ ok ]</span>
+      <span>[<span class="amber">0.3390</span>] integrity check: {stats[0].value} writeups, 0 excuses [ ok ]</span>
+      <span>[<span class="amber">0.4402</span>] warning: operator is <span class="red">still learning</span>, by design</span>
+      <span>[<span class="amber">0.5810</span>] session started · reader authenticated as: guest</span>
+    </div>
+
+    <pre class="figlet" aria-hidden="true">{banner}</pre>
+    <span class="visually-hidden" id="who">0xkaan · {site.role}</span>
+
+    <p class="kicker">senior ios dev · offensive security practitioner · self-taught</p>
+    <h1 class="headline">Break boxes.<br />Write down <span class="hl">exactly</span> how.</h1>
+
+    <div class="hero-grid">
+      <div class="hero-copy prose">
+        <Prompt cmd="cat whoami.txt" cursor={true} />
+        {site.bio.map((p) => <p>{p}</p>)}
+        <p class="pin">“Root access is temporary. The writeup is forever.”
+          <span class="faint"> // pinned above the desk since day one</span></p>
+      </div>
+
+      <aside class="whoami" aria-label="operator metadata">
+        <div class="whoami-h faint"># whoami.yml</div>
+        <dl>
+          <div><dt>handle</dt><dd>{site.handle}</dd></div>
+          <div><dt>role</dt><dd>senior ios dev</dd></div>
+          <div><dt>path</dt><dd class="amber">offensive security</dd></div>
+          <div><dt>status</dt><dd>▲ grinding</dd></div>
+          <div><dt>last_edit</dt><dd class="faint">2026-09-17</dd></div>
+        </dl>
+        <a class="whoami-cta" href="/whoami">read full ./whoami →</a>
+      </aside>
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== STATS ===== -->
+  <section aria-labelledby="counters">
+    <Prompt cmd="uptime && ls writeups/ | wc -l" />
+    <h2 id="counters" class="sec-h">// counters</h2>
+    <div class="ledger">
+      {stats.map((s) => (
+        <div class="cell">
+          <span class="num">{s.value}</span>
+          <span class="lbl faint">{s.label}</span>
+        </div>
+      ))}
+    </div>
+    <p class="faint hand">// counted by hand, updated when I remember</p>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== LATEST ===== -->
+  <section aria-labelledby="latest">
+    <Prompt cmd="ls -t writeups notes | head -3" />
+    <div class="sec-row">
+      <h2 id="latest" class="sec-h">// latest_writeups</h2>
+      <a class="more" href="/writeups">all writeups →</a>
+    </div>
+    <div class="feed">
+      {latest.map((it) => <WriteupCard {...it} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { padding-top: clamp(2rem, 5vw, 3.5rem); }
+  .boot {
+    display: grid; gap: .15rem;
+    font-size: .8rem; color: var(--ink-soft);
+    margin-bottom: 1.6rem; line-height: 1.5;
+  }
+  .boot span { white-space: normal; }
+  .figlet {
+    background: none; border: 0; padding: 0; margin: 0 0 .4rem;
+    color: var(--amber); text-shadow: var(--glow);
+    font-size: clamp(.5rem, 2.4vw, .95rem); line-height: 1.05;
+    overflow-x: auto;
+  }
+  .headline {
+    margin: .3rem 0 1.8rem; max-width: 16ch;
+  }
+  .headline .hl { color: var(--red); }
+
+  .hero-grid {
+    display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3rem); align-items: start;
+  }
+  .hero-copy p { margin: .8rem 0; }
+  .pin { border-left: 2px solid var(--amber-deep); padding-left: .9rem; color: var(--ink); font-style: normal; }
+
+  .whoami {
+    border: 1px solid var(--line); background: var(--bg-1);
+    padding: .9rem 1rem 1rem; font-size: .86rem;
+    position: relative;
+  }
+  .whoami::after {
+    content: '●'; position: absolute; top: .7rem; right: .8rem;
+    color: var(--done); font-size: .7rem;
+  }
+  .whoami-h { font-size: .78rem; margin-bottom: .7rem; }
+  .whoami dl { margin: 0; display: grid; gap: .3rem; }
+  .whoami dl > div { display: grid; grid-template-columns: 5.5rem 1fr; gap: .5rem; }
+  .whoami dt { color: var(--ink-faint); }
+  .whoami dd { margin: 0; color: var(--ink); }
+  .whoami-cta { display: inline-block; margin-top: .9rem; font-size: .82rem; }
+
+  .sec-h { font-family: var(--mono); font-weight: 600; font-size: 1.05rem; color: var(--amber); text-shadow: none; letter-spacing: .02em; }
+  .sec-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .more { font-size: .84rem; }
+
+  .ledger {
+    display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.15fr;
+    border: 1px solid var(--line); margin-top: 1rem;
+  }
+  .cell {
+    padding: 1.1rem 1rem; display: grid; gap: .2rem;
+    border-right: 1px dashed var(--line);
+  }
+  .cell:last-child { border-right: 0; }
+  .num { font-family: var(--display); font-size: 2.6rem; line-height: 1; color: var(--amber); text-shadow: var(--glow); }
+  .lbl { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; }
+  .hand { margin-top: .7rem; font-size: .76rem; }
+
+  .feed {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 1rem; margin-top: 1.1rem;
+  }
+
+  @media (max-width: 760px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .whoami { order: -1; }
+    .ledger { grid-template-columns: 1fr 1fr; }
+    .cell:nth-child(2) { border-right: 0; }
+    .cell:nth-child(1), .cell:nth-child(2) { border-bottom: 1px dashed var(--line); }
+  }
+</style>
+
+<script>
+  // Type the boot log in, then reveal the rest. Skips under reduced-motion.
+  const boot = document.getElementById('boot');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (boot && !reduce) {
+    const lines = Array.from(boot.children) as HTMLElement[];
+    lines.forEach((l) => (l.style.opacity = '0'));
+    let i = 0;
+    const tick = () => {
+      if (i >= lines.length) return;
+      lines[i].style.transition = 'opacity .18s';
+      lines[i].style.opacity = '1';
+      i++;
+      setTimeout(tick, 90 + Math.random() * 140);
+    };
+    setTimeout(tick, 150);
+  }
+</script>

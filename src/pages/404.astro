@@ -1,0 +1,163 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Prompt from '../components/Prompt.astro';
+import { nav } from '../data/site';
+
+// Links back into the site, home plus the two most useful nav targets.
+const exits = [
+  { href: '/', label: './', note: 'back to home' },
+  ...nav
+    .filter((n) => n.href === '/writeups' || n.href === '/roadmap')
+    .map((n) => ({ href: n.href, label: `.${n.href}`, note: n.label === 'writeups' ? 'rooted boxes, written up' : 'the plan toward OSCP' })),
+];
+---
+<BaseLayout title="404">
+  <section class="e404" aria-labelledby="err-h">
+    <Prompt cmd="cat $REQUESTED_PATH" cursor={true} />
+
+    <p class="errline" role="alert">
+      <span class="sh">bash:</span>
+      <span class="path" id="req-path">/that/page</span><span class="sep">:</span>
+      No such file or directory
+    </p>
+
+    <div class="glitch-wrap">
+      <p class="glitch" data-text="404" aria-hidden="true">404</p>
+      <h1 id="err-h" class="visually-hidden">404, page not found</h1>
+    </div>
+
+    <p class="human">
+      This box doesn't exist, or you don't have the creds.
+      <span class="faint">Either way, the shell just spat you back out.</span>
+    </p>
+
+    <hr class="hr" />
+
+    <Prompt cmd="ls -d ./ ./writeups ./roadmap" />
+    <nav class="exits" aria-label="ways back">
+      <ul>
+        {exits.map((e) => (
+          <li>
+            <a href={e.href}>
+              <span class="ex-l">{e.label}</span>
+              <span class="ex-note faint">{e.note}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <p class="exit-code faint" aria-hidden="true">exit code: 404 · signal: SIGLOST</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .e404 { padding-top: clamp(2rem, 6vw, 4rem); max-width: var(--measure); }
+
+  .errline {
+    font-size: .92rem;
+    color: var(--ink);
+    margin: .3rem 0 1.6rem;
+    word-break: break-word;
+    line-height: 1.6;
+  }
+  .errline .sh { color: var(--red); }
+  .errline .path { color: var(--amber-dim); }
+  .errline .sep { color: var(--ink-faint); }
+
+  .glitch-wrap { margin: .5rem 0 1.4rem; }
+  .glitch {
+    font-family: var(--display);
+    font-size: clamp(5rem, 26vw, 11rem);
+    line-height: .9;
+    letter-spacing: .04em;
+    color: var(--amber);
+    text-shadow: var(--glow);
+    margin: 0;
+    position: relative;
+    display: inline-block;
+  }
+  /* Subtle chromatic-split ghosts, offset amber/red copies, kept faint. */
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .glitch::before {
+    color: var(--red);
+    opacity: .28;
+    transform: translate(-2px, 1px);
+    mix-blend-mode: screen;
+    animation: glitch-a 3.4s steps(2, end) infinite;
+  }
+  .glitch::after {
+    color: var(--amber-deep);
+    opacity: .35;
+    transform: translate(2px, -1px);
+    mix-blend-mode: screen;
+    animation: glitch-b 2.6s steps(2, end) infinite;
+  }
+  @keyframes glitch-a {
+    0%, 92%, 100% { transform: translate(-2px, 1px); }
+    94% { transform: translate(-4px, -1px); }
+    96% { transform: translate(1px, 2px); }
+  }
+  @keyframes glitch-b {
+    0%, 90%, 100% { transform: translate(2px, -1px); }
+    93% { transform: translate(4px, 1px); }
+    97% { transform: translate(-1px, -2px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .glitch::before, .glitch::after { animation: none; }
+  }
+
+  .human {
+    color: var(--ink);
+    font-size: 1.02rem;
+    margin: 0 0 .5rem;
+    line-height: 1.7;
+  }
+  .human .faint { display: inline; }
+
+  .exits ul {
+    list-style: none; margin: 1rem 0 0; padding: 0;
+    display: grid; gap: .1rem;
+  }
+  .exits li { border-bottom: 1px dashed var(--line-soft); }
+  .exits a {
+    display: flex; align-items: baseline; gap: .9rem;
+    padding: .7rem .4rem; text-decoration: none;
+  }
+  .exits a:hover .ex-l { text-decoration: underline; text-decoration-color: var(--amber); text-underline-offset: 3px; }
+  .ex-l { color: var(--amber); font-size: 1rem; min-width: 8.5rem; }
+  .ex-note { font-size: .82rem; }
+
+  .exit-code {
+    margin-top: 1.8rem;
+    font-size: .74rem;
+    letter-spacing: .1em;
+  }
+
+  @media (max-width: 480px) {
+    .exits a { flex-direction: column; gap: .15rem; }
+    .ex-l { min-width: 0; }
+  }
+</style>
+
+<script>
+  // Reflect the actually-requested path into the error line, client-side.
+  // Guarded + sanitized so we never echo attacker-controlled markup.
+  const el = document.getElementById('req-path');
+  if (el) {
+    try {
+      let p = (location.pathname || '/').slice(0, 80);
+      // keep it terminal-plausible; strip anything that isn't a tame path char
+      p = p.replace(/[^\w\-./~]/g, '');
+      if (p && p !== '/') el.textContent = p;
+    } catch (_) {
+      /* leave the fallback path in place */
+    }
+  }
+</script>

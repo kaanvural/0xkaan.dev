@@ -1,0 +1,103 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Prompt from '../../components/Prompt.astro';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes', (e) => !e.data.draft);
+  return notes.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const { title, date, tags, summary, sample } = entry.data;
+const slug = entry.id;
+const dateStr = date.toISOString().slice(0, 10);
+const readMin = Math.max(1, Math.round((entry.body ?? '').split(/\s+/).length / 200));
+---
+<BaseLayout title={title} description={summary}>
+  <article class="note">
+    <p class="backline">
+      <a href="/notes" class="back">← ./notes</a>
+    </p>
+
+    <Prompt cmd={`cat ${slug}.md`} />
+
+    <header class="note-h">
+      <h1 class="page-h">{title}</h1>
+      <div class="meta">
+        <span class="perms faint">-rw-r--r--</span>
+        <span class="date faint">{dateStr}</span>
+        <span class="dot faint" aria-hidden="true">·</span>
+        <span class="read faint">~{readMin} min</span>
+        {sample && <span class="sample faint" title="placeholder, replace before publishing">[sample]</span>}
+      </div>
+      {tags.length > 0 && (
+        <ul class="tags" aria-label="tags">
+          {tags.map((t) => <li class="tag hash">{t}</li>)}
+        </ul>
+      )}
+    </header>
+
+    <hr class="hr" />
+
+    <div class="md-body">
+      <Content />
+    </div>
+
+    <hr class="hr" />
+
+    <footer class="note-f">
+      <a href="/notes" class="back">← all notes</a>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .note { padding-block: clamp(1.5rem, 5vw, 3rem); }
+  .backline { margin: 0 0 1.4rem; }
+  .back {
+    font-size: .82rem;
+    letter-spacing: .02em;
+    text-decoration: none;
+    color: var(--ink-soft);
+  }
+  .back:hover { color: var(--amber); }
+
+  .note-h { margin-top: .4rem; }
+  .page-h { margin: 0; }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .55rem;
+    margin-top: .7rem;
+    font-size: .78rem;
+    letter-spacing: .02em;
+  }
+  .perms { font-size: .72rem; }
+  .dot { opacity: .7; }
+  .sample {
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: .02em .4em;
+    font-size: .68rem;
+    letter-spacing: .08em;
+  }
+
+  .tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    margin: .9rem 0 0;
+    padding: 0;
+  }
+
+  .note-f { margin-top: .4rem; }
+</style>

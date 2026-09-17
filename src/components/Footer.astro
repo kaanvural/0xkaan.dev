@@ -1,0 +1,46 @@
+---
+import { socials, site } from '../data/site';
+---
+<footer class="ftr">
+  <div class="wrap">
+    <hr class="hr" />
+    <p class="prompt" style="margin-top:1.4rem">
+      <span class="u">r00t@0xkaan.dev</span><span class="p">:~$</span>
+      <span class="c">cat contact.txt</span>
+    </p>
+    <ul class="links">
+      {socials.map((s) => (
+        <li>
+          <span class="faint">{s.label.padEnd(11, '.')}</span>
+          <a href={s.href} rel="me noopener">{s.handle}</a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="colophon faint">
+      <span>{site.handle}.dev</span>
+      <span aria-hidden="true">·</span>
+      <span>built by hand in a terminal</span>
+      <span aria-hidden="true">·</span>
+      <span>last fsck: today, probably</span>
+    </div>
+    <p class="todo faint"># TODO: dark mode toggle? this IS the dark mode.</p>
+  </div>
+</footer>
+
+<style>
+  .ftr { padding-block: 2rem 3rem; }
+  .links {
+    list-style: none; margin: .8rem 0 0; padding: 0;
+    display: grid; gap: .25rem;
+    font-size: .9rem;
+  }
+  .links .faint { color: var(--ink-faint); margin-right: .4rem; }
+  .pgp { margin-top: 1rem; font-size: .82rem; overflow-x: auto; }
+  .pgp code { color: var(--ink-soft); }
+  .colophon {
+    margin-top: 1.6rem; display: flex; flex-wrap: wrap; gap: .5rem;
+    font-size: .74rem; letter-spacing: .04em;
+  }
+  .todo { margin-top: .6rem; font-size: .76rem; opacity: .8; }
+</style>

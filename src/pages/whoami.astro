@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Prompt from '../components/Prompt.astro';
+import { site, achievements } from '../data/site';
+
+// Map an achievement status to a badge tone + label.
+const statusMeta = (status: string) => {
+  switch (status) {
+    case 'in progress': return { cls: 'prog', label: 'in-progress' };
+    case 'active':      return { cls: 'prog', label: 'active' };
+    case 'ongoing':     return { cls: 'done', label: 'ongoing' };
+    case 'planned':     return { cls: 'target', label: 'planned' };
+    default:            return { cls: 'note', label: status };
+  }
+};
+
+// A few extra human lines in Kaan's voice, appended after site.bio.
+const extraBio = [
+  "By day I ship iOS apps at a senior level; off the clock I break things on purpose and take notes.",
+  "I write everything down while it's still fresh, because the version of me stuck on the same privesc in six months will need it.",
+];
+---
+<BaseLayout title="whoami">
+  <!-- ===== HEADER ===== -->
+  <section class="head" aria-labelledby="who-h">
+    <Prompt cmd="cat whoami.txt" cursor={true} />
+    <h1 id="who-h" class="page-h">./whoami</h1>
+    <p class="lead">The operator behind the notebook: senior iOS developer, self-taught security practitioner, rooting boxes in public.</p>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== BIO ===== -->
+  <section aria-labelledby="bio-h">
+    <Prompt cmd="sed -n '1,$p' bio.txt" />
+    <h2 id="bio-h" class="sec-h">// bio</h2>
+    <div class="prose bio">
+      {site.bio.map((p) => <p>{p}</p>)}
+      {extraBio.map((p) => <p>{p}</p>)}
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== PROOF ===== -->
+  <section aria-labelledby="proof-h">
+    <Prompt cmd="ls -la ./proof/" />
+    <h2 id="proof-h" class="sec-h">// proof</h2>
+    <ul class="proof" role="list">
+      {achievements.map((a) => {
+        const st = statusMeta(a.status);
+        return (
+          <li class="entry">
+            <span class="perm faint" aria-hidden="true">-rw-r--r--</span>
+            <span class="title">{a.title}</span>
+            <span class:list={['badge', 'st', st.cls]}>{st.label}</span>
+            <span class="note faint">{a.note}</span>
+          </li>
+        );
+      })}
+    </ul>
+    <p class="faint cap">// {achievements.length} items · status tracked by hand · full contact in the footer</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .sec-h {
+    font-family: var(--mono); font-weight: 600; font-size: 1.05rem;
+    color: var(--amber); text-shadow: none; letter-spacing: .02em;
+    margin-bottom: 1.1rem;
+  }
+  .head { padding-top: clamp(1.5rem, 4vw, 3rem); }
+  .head .lead { margin-top: .8rem; }
+
+  .bio p { margin: .9rem 0; color: var(--ink); }
+
+  /* ---- proof / directory listing ---- */
+  .proof { list-style: none; margin: 0; padding: 0; display: grid; gap: .1rem; }
+  .entry {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr) auto;
+    align-items: center; gap: .6rem 1rem;
+    padding: .6rem 0; border-bottom: 1px dashed var(--line-soft);
+    font-size: .92rem;
+  }
+  .perm { font-size: .8rem; letter-spacing: .02em; }
+  .title { color: var(--ink); }
+  .st { justify-self: start; white-space: nowrap; }
+  .st.prog   { color: var(--amber); border-color: var(--amber-deep); }
+  .st.done   { color: var(--done); border-color: color-mix(in srgb, var(--done) 40%, var(--line)); }
+  .st.target { color: var(--red); border-color: var(--red-dim); }
+  .st.note   { color: var(--ink-soft); }
+  .note { grid-column: 2 / -1; font-size: .82rem; }
+  .cap { margin-top: .8rem; font-size: .76rem; }
+
+  @media (max-width: 560px) {
+    .entry {
+      grid-template-columns: 1fr auto;
+      row-gap: .3rem;
+    }
+    .perm { display: none; }
+    .title { grid-column: 1; }
+    .st { grid-column: 2; justify-self: end; }
+    .note { grid-column: 1 / -1; }
+  }
+</style>

@@ -1,0 +1,290 @@
+/* ============================================================
+   0xkaan.dev, cyber-cyan CRT terminal notebook
+   Design system: cool near-black + cyan phosphor (#3fd6e6),
+   dim red reserved for alert/target accents. IBM Plex Mono body,
+   VT323 display. Body copy stays crisp cool grey (~12:1); glow
+   is applied to headings only. All hues are driven by the --accent*
+   tokens below, so re-theming is a one-block change.
+   ============================================================ */
+
+:root {
+  /* backgrounds, cool near-black */
+  --bg:        #0a0a0c;
+  --bg-1:      #0f1013;
+  --bg-2:      #14151a;
+  --panel:     #101116;
+  --line:      #24262e;
+  --line-soft: #1a1c22;
+
+  /* cyan phosphor accent */
+  --accent:      #3fd6e6;
+  --accent-dim:  #279aa8;
+  --accent-deep: #17626d;
+
+  /* alert / target, dim red, used sparingly */
+  --red:      #ff5b52;
+  --red-dim:  #b63a34;
+
+  /* text, cool greys, high contrast */
+  --ink:      #e7e9ee;   /* body, ~13:1 on --bg */
+  --ink-soft: #aab0bd;   /* secondary, ~7.6:1 */
+  --ink-faint:#6f7684;   /* labels/timestamps, ~5:1, never load-bearing */
+
+  /* status */
+  --done:    #6fce8f;
+  --active:  var(--accent);
+  --planned: #6b7180;
+
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --display: 'VT323', var(--mono);
+
+  --measure: 66ch;
+  --gutter: clamp(16px, 5vw, 64px);
+  --maxw: 1080px;
+
+  --glow: 0 0 1px rgba(63,214,230,.5), 0 0 14px rgba(63,214,230,.20);
+}
+
+/* Single phosphor colour, fixed dark theme (a terminal has one tube). */
+:root[data-theme='light'] { color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* ---- CRT texture: whisper-quiet scanlines + corner vignette ---- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(63, 214, 230, 0.018) 0px,
+    rgba(63, 214, 230, 0.018) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: radial-gradient(ellipse at center, transparent 62%, rgba(0,0,0,.42) 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { display: none; }
+}
+
+/* ---- layout primitives ---- */
+.wrap {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.stack > * + * { margin-top: 1rem; }
+.prose { max-width: var(--measure); }
+
+/* ---- links ---- */
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-deep);
+  text-underline-offset: 3px;
+  transition: color .12s, text-decoration-color .12s;
+}
+a:hover { text-decoration-color: var(--accent); }
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  background: rgba(63, 214, 230,.06);
+}
+
+/* ---- headings (display, with glow) ---- */
+h1, h2, h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: .01em;
+  line-height: 1.05;
+  color: var(--accent);
+  text-shadow: var(--glow);
+  margin: 0;
+}
+h1 { font-size: clamp(2.6rem, 8vw, 4.4rem); }
+h2 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
+h3 { font-size: clamp(1.4rem, 4vw, 1.8rem); }
+
+/* ---- terminal prompt line (section intro) ---- */
+.prompt {
+  font-family: var(--mono);
+  font-size: .82rem;
+  letter-spacing: .02em;
+  color: var(--ink-soft);
+  margin: 0 0 .5rem;
+  text-shadow: none;
+  word-break: break-word;
+}
+.prompt .u { color: var(--accent); }
+.prompt .p { color: var(--ink-faint); }
+.prompt .c { color: var(--ink); }
+.prompt::before { content: none; }
+
+/* blinking block cursor */
+.cursor {
+  display: inline-block;
+  width: .55ch;
+  height: 1.05em;
+  background: var(--accent);
+  vertical-align: -0.15em;
+  margin-left: .1ch;
+  animation: blink 1.05s steps(2, start) infinite;
+}
+@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---- uppercase micro-labels ---- */
+.kicker {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  text-shadow: none;
+}
+
+/* ---- section spacing ---- */
+section { padding-block: clamp(2.5rem, 7vw, 4.5rem); }
+.hr {
+  border: 0;
+  border-top: 1px dashed var(--line);
+  margin: 0;
+}
+
+/* ---- code ---- */
+code {
+  font-family: var(--mono);
+  font-size: .88em;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  padding: .08em .4em;
+  border-radius: 2px;
+  color: var(--accent-dim);
+}
+pre {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent-deep);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  font-size: .84rem;
+  line-height: 1.55;
+}
+pre code {
+  background: none; border: 0; padding: 0; color: var(--ink);
+}
+
+/* ---- tags / chips ---- */
+.tag {
+  display: inline-block;
+  font-size: .72rem;
+  letter-spacing: .04em;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  padding: .05em .5em;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.tag.hash::before { content: '#'; color: var(--accent-deep); }
+
+/* ---- difficulty / platform badges ---- */
+.badge {
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .1em .5em;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+.badge.easy    { color: var(--done); border-color: color-mix(in srgb, var(--done) 40%, var(--line)); }
+.badge.medium  { color: var(--accent); border-color: var(--accent-deep); }
+.badge.hard    { color: var(--red); border-color: var(--red-dim); }
+.badge.insane  { color: var(--red); border-color: var(--red); }
+.badge.htb     { color: var(--done); }
+.badge.thm     { color: var(--red); }
+.badge.note    { color: var(--ink-soft); }
+
+/* ---- utility ---- */
+.muted { color: var(--ink-soft); }
+.faint { color: var(--ink-faint); }
+.amber { color: var(--accent); }
+.red   { color: var(--red); }
+.nowrap { white-space: nowrap; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ---- rendered markdown body (writeup / note detail) ---- */
+.md-body { max-width: var(--measure); }
+.md-body > * + * { margin-top: 1.05rem; }
+.md-body h2 {
+  font-family: var(--mono); font-weight: 600;
+  font-size: 1.25rem; color: var(--accent); text-shadow: none;
+  letter-spacing: .01em; margin-top: 2.2rem;
+  padding-bottom: .3rem; border-bottom: 1px dashed var(--line);
+}
+.md-body h3 {
+  font-family: var(--mono); font-weight: 600;
+  font-size: 1.05rem; color: var(--ink); text-shadow: none;
+  margin-top: 1.6rem;
+}
+.md-body p, .md-body li { color: var(--ink); }
+.md-body a { text-decoration-color: var(--accent); }
+.md-body ul, .md-body ol { padding-left: 1.3rem; }
+.md-body li { margin-top: .35rem; }
+.md-body ul { list-style: none; }
+.md-body ul > li::before { content: '›'; color: var(--accent-deep); margin-left: -1.1rem; margin-right: .5rem; }
+.md-body blockquote {
+  border-left: 2px solid var(--red-dim);
+  padding: .3rem 0 .3rem 1rem; margin-left: 0;
+  color: var(--ink-soft); font-style: normal;
+}
+.md-body blockquote p { color: var(--ink-soft); }
+.md-body pre { margin-block: 1.2rem; }
+.md-body hr { border: 0; border-top: 1px dashed var(--line); margin-block: 2rem; }
+.md-body img { max-width: 100%; height: auto; border: 1px solid var(--line); }
+.md-body table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.md-body th, .md-body td { border: 1px solid var(--line); padding: .4rem .6rem; text-align: left; }
+.md-body th { color: var(--accent-dim); }
+
+/* ---- shared page-heading pattern ---- */
+.page-h { font-family: var(--mono); font-weight: 600; font-size: clamp(1.5rem, 4vw, 2rem); color: var(--accent); text-shadow: none; letter-spacing: .01em; }
+.lead { color: var(--ink-soft); max-width: var(--measure); font-size: 1rem; }
+
+/* skip link */
+.skip {
+  position: absolute; left: -999px; top: 0; z-index: 200;
+  background: var(--bg); color: var(--accent);
+  padding: .5rem 1rem; border: 1px solid var(--accent);
+}
+.skip:focus { left: 0; }

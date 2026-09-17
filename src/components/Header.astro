@@ -1,0 +1,243 @@
+---
+import { nav, site } from '../data/site';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+---
+<a class="skip" href="#main">skip to content</a>
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a class="brand" href="/" aria-label={`${site.handle}.dev home`}>
+      <span class="brand-h">{site.handle}</span><span class="brand-t">.dev</span>
+    </a>
+
+    <nav class="nav" aria-label="primary">
+      {nav.map((n) => (
+        <a
+          href={n.href}
+          class:list={['nav-a', { on: isActive(n.href) }]}
+          aria-current={isActive(n.href) ? 'page' : undefined}
+        >./{n.label}</a>
+      ))}
+    </nav>
+
+    <button id="k-open" class="ksearch" aria-label="Search (Ctrl+K)">
+      <span class="ks-lead">/</span> grep site…
+      <kbd class="kbd">⌘K</kbd>
+    </button>
+  </div>
+</header>
+
+<!-- Ctrl+K search palette -->
+<div id="kpal" class="kpal" hidden role="dialog" aria-modal="true" aria-label="Search">
+  <div class="kpal-box">
+    <div class="kpal-top">
+      <span class="prompt"><span class="u">r00t@0xkaan.dev</span><span class="p">:~$</span> grep -ri</span>
+      <input id="k-input" class="kpal-input" type="text" placeholder="tool, box, tag, note…" autocomplete="off" spellcheck="false" aria-label="Search query" />
+      <kbd class="kbd">esc</kbd>
+    </div>
+    <ul id="k-results" class="kpal-results" role="listbox" aria-label="Results"></ul>
+    <div class="kpal-foot faint">↑↓ move · ⏎ open · esc close</div>
+  </div>
+</div>
+
+<style>
+  .hdr {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(4px);
+    border-bottom: 1px solid var(--line);
+  }
+  .hdr-in {
+    display: flex; align-items: center; gap: 1rem;
+    padding-block: .7rem; flex-wrap: wrap;
+  }
+  .brand {
+    font-family: var(--display);
+    font-size: 1.9rem; line-height: 1;
+    text-decoration: none; letter-spacing: .02em;
+    text-shadow: var(--glow);
+  }
+  .brand-h { color: var(--amber); }
+  .brand-t { color: var(--ink-faint); }
+  .brand:focus-visible { background: none; outline-offset: 4px; }
+
+  .nav {
+    display: flex; gap: .15rem 1rem; flex-wrap: wrap;
+    margin-right: auto; margin-left: .5rem;
+  }
+  .nav-a {
+    font-size: .86rem; color: var(--ink-soft);
+    text-decoration: none; padding: .15em .35em;
+    border: 1px dashed transparent; border-radius: 2px;
+  }
+  .nav-a:hover { color: var(--amber); }
+  .nav-a.on {
+    color: var(--amber);
+    border-color: var(--amber-deep);
+  }
+
+  .ksearch {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: var(--mono); font-size: .78rem;
+    color: var(--ink-faint);
+    background: var(--bg-1); border: 1px solid var(--line);
+    border-radius: 3px; padding: .35rem .55rem; cursor: pointer;
+  }
+  .ksearch:hover { border-color: var(--amber-deep); color: var(--ink-soft); }
+  .ks-lead { color: var(--amber-deep); }
+  .kbd {
+    font-family: var(--mono); font-size: .68rem;
+    color: var(--ink-soft); background: var(--bg-2);
+    border: 1px solid var(--line); border-radius: 3px;
+    padding: .05em .35em;
+  }
+
+  /* palette */
+  .kpal {
+    position: fixed; inset: 0; z-index: 120;
+    background: rgba(3,2,1,.72);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: clamp(3rem, 12vh, 8rem) var(--gutter) 2rem;
+  }
+  .kpal[hidden] { display: none; }
+  .kpal-box {
+    width: min(640px, 100%);
+    background: var(--panel);
+    border: 1px solid var(--amber-deep);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 20px 60px rgba(0,0,0,.6);
+  }
+  .kpal-top {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .7rem .9rem; border-bottom: 1px solid var(--line);
+    flex-wrap: nowrap;
+  }
+  .kpal-top .prompt { margin: 0; white-space: nowrap; }
+  .kpal-input {
+    flex: 1; min-width: 0;
+    background: none; border: 0; color: var(--ink);
+    font-family: var(--mono); font-size: .95rem;
+  }
+  .kpal-input:focus-visible { outline: none; background: none; }
+  .kpal-results { list-style: none; margin: 0; padding: .3rem; max-height: 46vh; overflow-y: auto; }
+  .kpal-results:empty { display: none; }
+  .k-item {
+    display: flex; gap: .6rem; align-items: baseline;
+    padding: .5rem .6rem; cursor: pointer; border-radius: 2px;
+    border: 1px solid transparent;
+  }
+  .k-item[aria-selected='true'], .k-item:hover {
+    background: var(--bg-2); border-color: var(--line);
+  }
+  .k-item .k-file { color: var(--amber); font-size: .84rem; }
+  .k-item .k-meta { color: var(--ink-faint); font-size: .74rem; margin-left: auto; white-space: nowrap; }
+  .k-empty { padding: .8rem .6rem; color: var(--ink-faint); font-size: .84rem; }
+  .kpal-foot {
+    padding: .5rem .9rem; border-top: 1px solid var(--line);
+    font-size: .72rem; letter-spacing: .04em;
+  }
+
+  @media (max-width: 560px) {
+    .ksearch { order: 3; }
+    .nav { order: 2; margin-left: 0; width: 100%; }
+    .kpal-top .prompt { display: none; }
+  }
+</style>
+
+<script>
+  // Minimal client-side search over a build-time index at /search.json
+  const openBtn = document.getElementById('k-open');
+  const pal = document.getElementById('kpal') as HTMLElement;
+  const input = document.getElementById('k-input') as HTMLInputElement;
+  const results = document.getElementById('k-results') as HTMLElement;
+  let idx: any[] = [];
+  let loaded = false;
+  let sel = 0;
+
+  async function ensureIndex() {
+    if (loaded) return;
+    loaded = true;
+    try {
+      const r = await fetch('/search.json');
+      idx = await r.json();
+    } catch { idx = []; }
+  }
+
+  function openPal() {
+    pal.hidden = false;
+    ensureIndex();
+    input.value = '';
+    render('');
+    setTimeout(() => input.focus(), 0);
+  }
+  function closePal() {
+    pal.hidden = true;
+    openBtn?.focus();
+  }
+
+  function render(q: string) {
+    const query = q.trim().toLowerCase();
+    let items = idx;
+    if (query) {
+      items = idx.filter((it) =>
+        (it.hay || '').includes(query)
+      ).slice(0, 12);
+    } else {
+      items = idx.slice(0, 8);
+    }
+    sel = 0;
+    if (!items.length) {
+      results.innerHTML = '<li class="k-empty">no matches, 0 results</li>';
+      return;
+    }
+    results.innerHTML = items.map((it, i) =>
+      `<li class="k-item" role="option" id="k-${i}" data-url="${it.url}" aria-selected="${i === 0}">
+        <span class="k-file">${it.file}</span>
+        <span>${it.title}</span>
+        <span class="k-meta">${it.kind}</span>
+      </li>`
+    ).join('');
+    Array.from(results.children).forEach((el) =>
+      el.addEventListener('click', () => {
+        const u = (el as HTMLElement).dataset.url;
+        if (u) location.href = u;
+      })
+    );
+  }
+
+  function move(d: number) {
+    const items = Array.from(results.querySelectorAll('.k-item')) as HTMLElement[];
+    if (!items.length) return;
+    items[sel]?.setAttribute('aria-selected', 'false');
+    sel = (sel + d + items.length) % items.length;
+    items[sel]?.setAttribute('aria-selected', 'true');
+    items[sel]?.scrollIntoView({ block: 'nearest' });
+  }
+  function choose() {
+    const cur = results.querySelector('.k-item[aria-selected="true"]') as HTMLElement;
+    const u = cur?.dataset.url;
+    if (u) location.href = u;
+  }
+
+  openBtn?.addEventListener('click', openPal);
+  input?.addEventListener('input', () => render(input.value));
+  pal?.addEventListener('click', (e) => { if (e.target === pal) closePal(); });
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+    else if (e.key === 'Enter') { e.preventDefault(); choose(); }
+    else if (e.key === 'Escape') { e.preventDefault(); closePal(); }
+  });
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      pal.hidden ? openPal() : closePal();
+    } else if (e.key === 'Escape' && !pal.hidden) {
+      closePal();
+    } else if (e.key === '/' && pal.hidden &&
+      !/^(INPUT|TEXTAREA)$/.test((e.target as HTMLElement)?.tagName)) {
+      e.preventDefault();
+      openPal();
+    }
+  });
+</script>

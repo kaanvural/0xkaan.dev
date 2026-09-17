@@ -1,0 +1,66 @@
+---
+// Case-file styled writeup/note card.
+interface Props {
+  href: string;
+  file: string;       // filename slug e.g. htb_keeper.md
+  title: string;
+  platform: string;   // HTB / THM / note ...
+  os?: string;
+  difficulty?: string;
+  date: Date;
+  tags: string[];
+  summary: string;
+  readMin?: number;
+}
+const { href, file, title, platform, os, difficulty, date, tags, summary, readMin } = Astro.props;
+const d = date.toISOString().slice(0, 10);
+const perms = platform === 'note' ? '-rw-r--r--' : '-rwxr-xr-x';
+---
+<article class="card">
+  <header class="card-h">
+    <span class="perms faint">{perms}</span>
+    <a class="file" href={href}>{file}</a>
+    <span class="date faint">{d}</span>
+  </header>
+  <div class="card-b">
+    <div class="badges">
+      <span class:list={['badge', platform.toLowerCase()]}>{platform}</span>
+      {os && <span class="badge">{os}</span>}
+      {difficulty && <span class:list={['badge', difficulty]}>{difficulty}</span>}
+      {readMin && <span class="faint read">~{readMin} min</span>}
+    </div>
+    <h3 class="card-t"><a href={href}>{title}</a></h3>
+    <p class="card-s muted">{summary}</p>
+    <ul class="tags">
+      {tags.map((t) => <li class="tag hash">{t}</li>)}
+    </ul>
+  </div>
+</article>
+
+<style>
+  .card {
+    border: 1px solid var(--line);
+    background: var(--bg-1);
+    position: relative;
+    /* clipped corner */
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  }
+  .card:hover { border-color: var(--amber-deep); }
+  .card-h {
+    display: flex; gap: .6rem; align-items: baseline;
+    padding: .55rem .8rem; border-bottom: 1px dashed var(--line);
+    font-size: .78rem; flex-wrap: wrap;
+  }
+  .perms { font-size: .72rem; }
+  .file { color: var(--amber); text-decoration: none; }
+  .file:hover { text-decoration: underline; }
+  .date { margin-left: auto; font-size: .74rem; }
+  .card-b { padding: .8rem .9rem 1rem; }
+  .badges { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; margin-bottom: .5rem; }
+  .read { font-size: .72rem; margin-left: auto; }
+  .card-t { font-family: var(--mono); font-weight: 600; font-size: 1.02rem; line-height: 1.3; text-shadow: none; color: var(--ink); margin-bottom: .4rem; }
+  .card-t a { color: var(--ink); text-decoration: none; }
+  .card-t a:hover { color: var(--amber); }
+  .card-s { font-size: .88rem; line-height: 1.55; margin: 0 0 .7rem; }
+  .tags { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem; margin: 0; padding: 0; }
+</style>

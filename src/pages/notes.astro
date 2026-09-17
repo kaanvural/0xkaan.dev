@@ -1,0 +1,162 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Prompt from '../components/Prompt.astro';
+
+const readMin = (body = '') => Math.max(1, Math.round(body.split(/\s+/).length / 200));
+const fileFor = (id: string) => id.replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+
+const all = await getCollection('notes', (e) => !e.data.draft);
+
+// Number notes like a lab notebook: oldest = nt01, so filenames stay stable
+// as new entries land on top. Display order is newest-first.
+const byDateAsc = [...all].sort((a, b) => +a.data.date - +b.data.date);
+const numFor = new Map(byDateAsc.map((e, i) => [e.id, String(i + 1).padStart(2, '0')]));
+
+const notes = [...all]
+  .sort((a, b) => +b.data.date - +a.data.date)
+  .map((e) => ({
+    id: e.id,
+    file: `nt${numFor.get(e.id)}_${fileFor(e.id)}.md`,
+    href: `/notes/${e.id}`,
+    date: e.data.date.toISOString().slice(0, 10),
+    title: e.data.title,
+    tags: e.data.tags,
+    summary: e.data.summary,
+    readMin: readMin(e.body),
+    sample: e.data.sample,
+  }));
+
+const total = notes.length;
+const tagSet = new Set(notes.flatMap((n) => n.tags));
+---
+<BaseLayout title="notes" description="Freer-form technical notes, half-finished ideas and methodology from 0xkaan.">
+  <!-- ===== HEADER ===== -->
+  <section aria-labelledby="notes-h">
+    <Prompt cmd="ls -t notes/" cursor={true} />
+    <h1 id="notes-h" class="page-h">./notes</h1>
+    <p class="lead">
+      Freer-form technical notes, half-finished ideas and methodology, the stuff
+      that isn't a full box writeup but is worth writing down before I forget it.
+    </p>
+    <p class="meta faint">
+      {total} {total === 1 ? 'entry' : 'entries'}
+      {tagSet.size > 0 && <> · {tagSet.size} tags · sorted newest first</>}
+    </p>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== INDEX ===== -->
+  <section aria-labelledby="index-h">
+    <Prompt cmd="cat notes/*.md | grep -E '^(title|date|tags)'" />
+    <h2 id="index-h" class="sec-h">// index</h2>
+
+    {total === 0 ? (
+      <div class="empty">
+        <pre aria-hidden="true">notes/ is empty, nothing committed yet.</pre>
+        <p class="muted">
+          No notes published. They'll show up here the moment the first one lands
+          in <code>src/content/notes/</code>.
+        </p>
+      </div>
+    ) : (
+      <ol class="notes">
+        {notes.map((n) => (
+          <li class:list={['note', { sample: n.sample }]}>
+            <a class="row-link" href={n.href} aria-label={`Open note: ${n.title}`}></a>
+            <div class="row-head">
+              <span class="perms faint" aria-hidden="true">-rw-r--r--</span>
+              <span class="file">{n.file}</span>
+              {n.sample && <span class="sample-mark faint" title="placeholder, replace with a real note">sample</span>}
+              <span class="date faint">{n.date}</span>
+              <span class="read faint">~{n.readMin} min</span>
+            </div>
+            <h3 class="row-title">{n.title}</h3>
+            <p class="row-summary">{n.summary}</p>
+            {n.tags.length > 0 && (
+              <ul class="tags" aria-label="tags">
+                {n.tags.map((t) => <li class="tag hash">{t}</li>)}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ol>
+    )}
+    <p class="foot faint">// {total > 0 ? 'click a row to read the full note' : 'check back soon'}</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .meta { font-size: .78rem; margin-top: .7rem; letter-spacing: .02em; }
+
+  .sec-h {
+    font-family: var(--mono); font-weight: 600; font-size: 1.05rem;
+    color: var(--amber); text-shadow: none; letter-spacing: .02em;
+  }
+
+  /* ---- notebook list: dense rows, dashed separators ---- */
+  .notes { list-style: none; margin: 1.1rem 0 0; padding: 0; }
+  .note {
+    position: relative;
+    padding: 1rem .2rem 1.1rem;
+    border-top: 1px dashed var(--line);
+    transition: background .12s, border-color .12s;
+  }
+  .note:last-child { border-bottom: 1px dashed var(--line); }
+  .note:hover { background: var(--bg-1); }
+
+  /* full-row click target sits under the text; real links stay reachable */
+  .row-link {
+    position: absolute; inset: 0; z-index: 1;
+    text-decoration: none;
+  }
+  .row-link:focus-visible {
+    outline: 2px solid var(--amber); outline-offset: -2px; background: rgba(63, 214, 230,.06);
+  }
+  .note:hover .file { color: var(--amber); text-decoration: underline; text-decoration-color: var(--amber-deep); }
+
+  .row-head {
+    display: flex; align-items: baseline; gap: .6rem;
+    font-size: .78rem; flex-wrap: wrap;
+  }
+  .perms { font-size: .72rem; }
+  .file { color: var(--amber-dim); font-size: .82rem; word-break: break-all; }
+  .sample-mark {
+    font-size: .64rem; letter-spacing: .12em; text-transform: uppercase;
+    border: 1px solid var(--line); border-radius: 2px; padding: .02em .4em;
+  }
+  .date { margin-left: auto; font-size: .74rem; }
+  .read { font-size: .74rem; }
+
+  .row-title {
+    font-family: var(--mono); font-weight: 600; font-size: 1.06rem;
+    line-height: 1.3; color: var(--ink); text-shadow: none;
+    margin: .5rem 0 .4rem; max-width: var(--measure);
+  }
+  .note:hover .row-title { color: var(--amber); }
+  .row-summary {
+    color: var(--ink-soft); font-size: .9rem; line-height: 1.6;
+    margin: 0 0 .6rem; max-width: var(--measure);
+  }
+
+  .tags {
+    position: relative; z-index: 2; width: fit-content;
+    list-style: none; display: flex; flex-wrap: wrap; gap: .35rem;
+    margin: 0; padding: 0;
+  }
+
+  /* ---- empty state ---- */
+  .empty { margin-top: 1.2rem; }
+  .empty pre {
+    color: var(--ink-faint);
+    font-size: .82rem; margin: 0 0 .9rem;
+  }
+  .empty p { max-width: var(--measure); }
+
+  .foot { margin-top: 1.4rem; font-size: .76rem; }
+
+  @media (max-width: 560px) {
+    .date { margin-left: 0; }
+  }
+</style>

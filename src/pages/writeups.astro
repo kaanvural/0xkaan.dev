@@ -1,0 +1,231 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Prompt from '../components/Prompt.astro';
+import WriteupCard from '../components/WriteupCard.astro';
+
+const readMin = (body = '') => Math.max(1, Math.round(body.split(/\s+/).length / 200));
+const fileFor = (id: string) => id.replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+
+const wu = (await getCollection('writeups', (e) => !e.data.draft))
+  .sort((a, b) => +b.data.date - +a.data.date);
+
+// Cards, newest-first.
+const cards = wu.map((e) => ({
+  id: e.id,
+  href: `/writeups/${e.id}`,
+  file: `${e.data.platform.toLowerCase()}_${fileFor(e.data.box || e.id)}.md`,
+  title: e.data.title,
+  platform: e.data.platform,
+  os: e.data.os,
+  difficulty: e.data.difficulty,
+  date: e.data.date,
+  tags: e.data.tags,
+  summary: e.data.summary,
+  readMin: readMin(e.body),
+  sample: e.data.sample,
+}));
+
+// Distinct facets for the filter chips, in a stable order.
+const platOrder = ['HTB', 'THM', 'CTF', 'VULNHUB', 'OTHER'];
+const diffOrder = ['easy', 'medium', 'hard', 'insane'];
+const platforms = platOrder.filter((p) => cards.some((c) => c.platform === p));
+const difficulties = diffOrder.filter((d) => cards.some((c) => c.difficulty === d));
+
+const total = cards.length;
+---
+<BaseLayout title="writeups" description="Box writeups and CTF notes, filterable by platform and difficulty.">
+  <!-- ===== HEADER ===== -->
+  <section aria-labelledby="wu-h">
+    <Prompt cmd="ls -t writeups/" />
+    <h1 id="wu-h" class="page-h">./writeups</h1>
+    <p class="lead">
+      Every box I've rooted and every CTF I've cleared, written down step by step ,
+      recon to root, including the dead ends. If it's here, I actually did it.
+    </p>
+    <p class="countline faint">
+      <span class="c-prompt">$</span> ls writeups/ | wc -l <span class="c-arrow">&rarr;</span>
+      <span class="amber" data-count-total>{total}</span>
+    </p>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== INDEX ===== -->
+  <section aria-labelledby="wu-idx">
+    <Prompt cmd="grep -l -- --platform writeups/*.md | sort" />
+    <div class="idx-row">
+      <h2 id="wu-idx" class="sec-h">// index</h2>
+      <p class="shown faint" aria-live="polite" data-shown-line>
+        showing <span class="amber" data-shown>{total}</span>/<span data-total>{total}</span>
+      </p>
+    </div>
+
+    {total > 0 ? (
+      <>
+        <div class="filters" role="group" aria-label="Filter writeups">
+          <span class="f-lbl faint" aria-hidden="true">filter:</span>
+          <button type="button" class="chip is-active" data-filter="all" data-value="all" aria-pressed="true">all</button>
+          {platforms.length > 0 && (
+            <span class="f-group">
+              <span class="f-sub faint" aria-hidden="true">platform</span>
+              {platforms.map((p) => (
+                <button type="button" class="chip" data-filter="platform" data-value={p} aria-pressed="false">{p}</button>
+              ))}
+            </span>
+          )}
+          {difficulties.length > 0 && (
+            <span class="f-group">
+              <span class="f-sub faint" aria-hidden="true">difficulty</span>
+              {difficulties.map((d) => (
+                <button type="button" class="chip" data-filter="difficulty" data-value={d} aria-pressed="false">{d}</button>
+              ))}
+            </span>
+          )}
+        </div>
+
+        <div class="grid" data-grid>
+          {cards.map((c) => (
+            <div
+              class="cell"
+              data-cell
+              data-platform={c.platform}
+              data-difficulty={c.difficulty ?? ''}
+            >
+              {c.sample && <span class="sample-tag faint" aria-label="sample entry">sample</span>}
+              <WriteupCard
+                href={c.href}
+                file={c.file}
+                title={c.title}
+                platform={c.platform}
+                os={c.os}
+                difficulty={c.difficulty}
+                date={c.date}
+                tags={c.tags}
+                summary={c.summary}
+                readMin={c.readMin}
+              />
+            </div>
+          ))}
+        </div>
+
+        <p class="empty faint" data-empty hidden>
+          <span class="c-prompt">$</span> grep returned 0 matches, nothing filed under that yet.
+        </p>
+      </>
+    ) : (
+      <p class="empty faint">
+        <span class="c-prompt">$</span> writeups/ is empty, first box incoming. Check back soon.
+      </p>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .sec-h { font-family: var(--mono); font-weight: 600; font-size: 1.05rem; color: var(--amber); text-shadow: none; letter-spacing: .02em; }
+
+  .countline { margin-top: .9rem; font-size: .82rem; letter-spacing: .02em; }
+  .countline .c-prompt { color: var(--amber-deep); }
+  .countline .c-arrow { color: var(--ink-faint); }
+
+  .idx-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .shown { font-size: .8rem; letter-spacing: .02em; }
+
+  /* ---- filter chips ---- */
+  .filters {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: .4rem; margin: 1.1rem 0 1.4rem;
+  }
+  .f-lbl { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; margin-right: .1rem; }
+  .f-group { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+  .f-sub {
+    font-size: .64rem; letter-spacing: .16em; text-transform: uppercase;
+    padding-left: .5rem; margin-left: .2rem; border-left: 1px dashed var(--line);
+  }
+  .chip {
+    font-family: var(--mono);
+    font-size: .74rem; letter-spacing: .04em;
+    color: var(--ink-soft);
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    padding: .18em .6em;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: color .12s, border-color .12s, background .12s;
+  }
+  .chip::before { content: '['; color: var(--amber-deep); margin-right: .15em; }
+  .chip::after  { content: ']'; color: var(--amber-deep); margin-left: .15em; }
+  .chip:hover { color: var(--ink); border-color: var(--amber-deep); }
+  .chip.is-active {
+    color: var(--bg);
+    background: var(--amber);
+    border-color: var(--amber);
+    text-shadow: none;
+  }
+  .chip.is-active::before, .chip.is-active::after { color: var(--bg); }
+
+  /* ---- grid ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 1rem;
+  }
+  .cell { position: relative; min-width: 0; }
+  .cell[hidden] { display: none; }
+
+  .sample-tag {
+    position: absolute; z-index: 2;
+    top: -.55rem; right: .7rem;
+    font-size: .62rem; letter-spacing: .16em; text-transform: uppercase;
+    background: var(--bg); border: 1px dashed var(--line);
+    padding: .05em .45em; border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .empty {
+    margin-top: 1.2rem; font-size: .85rem;
+    padding: .9rem 1rem; border: 1px dashed var(--line); background: var(--bg-1);
+  }
+  .empty .c-prompt { color: var(--amber-deep); }
+</style>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('[data-grid]');
+  if (grid) {
+    const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
+    const cells = Array.from(grid.querySelectorAll<HTMLElement>('[data-cell]'));
+    const empty = document.querySelector<HTMLElement>('[data-empty]');
+    const shownEl = document.querySelector<HTMLElement>('[data-shown]');
+
+    let active = { filter: 'all', value: 'all' };
+
+    const apply = () => {
+      let shown = 0;
+      cells.forEach((cell) => {
+        const match =
+          active.value === 'all' ||
+          cell.dataset[active.filter] === active.value;
+        cell.hidden = !match;
+        if (match) shown++;
+      });
+      if (shownEl) shownEl.textContent = String(shown);
+      if (empty) empty.hidden = shown !== 0;
+    };
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        chips.forEach((c) => {
+          c.classList.remove('is-active');
+          c.setAttribute('aria-pressed', 'false');
+        });
+        chip.classList.add('is-active');
+        chip.setAttribute('aria-pressed', 'true');
+        active = {
+          filter: chip.dataset.filter || 'all',
+          value: chip.dataset.value || 'all',
+        };
+        apply();
+      });
+    });
+  }
+</script>
