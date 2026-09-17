@@ -3,29 +3,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Prompt from '../components/Prompt.astro';
 import { site, achievements } from '../data/site';
 
-// Map an achievement status to a badge tone + label.
+// Map an achievement status to a badge tone + label. Only "in progress"
+// gets the bright accent so the active cert (eJPT) is the one thing that pops.
 const statusMeta = (status: string) => {
   switch (status) {
     case 'in progress': return { cls: 'prog', label: 'in-progress' };
-    case 'active':      return { cls: 'prog', label: 'active' };
-    case 'ongoing':     return { cls: 'done', label: 'ongoing' };
     case 'planned':     return { cls: 'target', label: 'planned' };
     default:            return { cls: 'note', label: status };
   }
 };
-
-// A few extra human lines in Kaan's voice, appended after site.bio.
-const extraBio = [
-  "By day I ship iOS apps at a senior level; off the clock I break things on purpose and take notes.",
-  "I write everything down while it's still fresh, because the version of me stuck on the same privesc in six months will need it.",
-];
 ---
 <BaseLayout title="whoami">
   <!-- ===== HEADER ===== -->
   <section class="head" aria-labelledby="who-h">
     <Prompt cmd="cat whoami.txt" cursor={true} />
     <h1 id="who-h" class="page-h">./whoami</h1>
-    <p class="lead">The operator behind the notebook: senior iOS developer, self-taught security practitioner, rooting boxes in public.</p>
+    <p class="lead">Senior iOS dev. Security practitioner.</p>
   </section>
 
   <hr class="hr" />
@@ -36,7 +29,6 @@ const extraBio = [
     <h2 id="bio-h" class="sec-h">// bio</h2>
     <div class="prose bio">
       {site.bio.map((p) => <p>{p}</p>)}
-      {extraBio.map((p) => <p>{p}</p>)}
     </div>
   </section>
 
@@ -59,14 +51,14 @@ const extraBio = [
         );
       })}
     </ul>
-    <p class="faint cap">// {achievements.length} items · status tracked by hand · full contact in the footer</p>
+    <p class="faint cap">// {achievements.length} {achievements.length === 1 ? 'item' : 'items'} · tracked by hand</p>
   </section>
 </BaseLayout>
 
 <style>
   .sec-h {
     font-family: var(--mono); font-weight: 600; font-size: 1.05rem;
-    color: var(--amber); text-shadow: none; letter-spacing: .02em;
+    color: var(--accent); text-shadow: none; letter-spacing: .02em;
     margin-bottom: 1.1rem;
   }
   .head { padding-top: clamp(1.5rem, 4vw, 3rem); }
@@ -86,7 +78,7 @@ const extraBio = [
   .perm { font-size: .8rem; letter-spacing: .02em; }
   .title { color: var(--ink); }
   .st { justify-self: start; white-space: nowrap; }
-  .st.prog   { color: var(--amber); border-color: var(--amber-deep); }
+  .st.prog   { color: var(--accent); border-color: var(--accent-deep); }
   .st.done   { color: var(--done); border-color: color-mix(in srgb, var(--done) 40%, var(--line)); }
   .st.target { color: var(--red); border-color: var(--red-dim); }
   .st.note   { color: var(--ink-soft); }

@@ -7,9 +7,8 @@ export const site = {
   role: 'senior ios dev · security practitioner',
   tagline: 'Senior iOS developer breaking boxes and writing down exactly how.',
   bio: [
-    "I'm Kaan, a senior iOS developer by trade and an offensive security practitioner by obsession.",
-    "This is my open notebook: every box I break, every dead end, and the tooling I build along the way. If it's here, I actually did it. Nothing on this site is theory I haven't touched.",
-    "I read systems the way I read code: assume nothing, trust no input, and keep going until it does something it wasn't supposed to.",
+    "Senior iOS developer by trade, offensive security practitioner by obsession.",
+    "My open notebook: boxes I've rooted, written up exactly how.",
   ],
 };
 
@@ -50,7 +49,4 @@ export const skills = [
 // SAMPLE achievements / certs.
 export const achievements = [
   { title: 'eJPT', status: 'in progress', note: 'target: Q4 2026' },
-  { title: 'HTB, 34 machines rooted', status: 'ongoing', note: 'easy to medium' },
-  { title: 'THM, top 5%', status: 'active', note: 'multiple learning paths' },
-  { title: 'OSCP', status: 'planned', note: 'target: 2027' },
 ];

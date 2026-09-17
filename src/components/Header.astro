@@ -7,8 +7,16 @@ const isActive = (href: string) =>
 <a class="skip" href="#main">skip to content</a>
 <header class="hdr">
   <div class="wrap hdr-in">
-    <a class="brand" href="/" aria-label={`${site.handle}.dev home`}>
-      <span class="brand-h">{site.handle}</span><span class="brand-t">.dev</span>
+    <a class="brand" href="/" aria-label={`${site.handle} home`}>
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2.4 V5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="12" cy="2.1" r="1.15" fill="currentColor"/>
+        <rect x="3.8" y="5.6" width="16.4" height="12.4" rx="3.2" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M3.8 10.2 H2.1 M20.2 10.2 H21.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="9" cy="11.2" r="1.5" fill="currentColor"/>
+        <circle cx="15" cy="11.2" r="1.5" fill="currentColor"/>
+        <path d="M9 15 H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
     </a>
 
     <nav class="nav" aria-label="primary">
@@ -53,14 +61,17 @@ const isActive = (href: string) =>
     padding-block: .7rem; flex-wrap: wrap;
   }
   .brand {
-    font-family: var(--display);
-    font-size: 1.9rem; line-height: 1;
-    text-decoration: none; letter-spacing: .02em;
-    text-shadow: var(--glow);
+    display: inline-flex; align-items: center;
+    text-decoration: none;
   }
-  .brand-h { color: var(--amber); }
-  .brand-t { color: var(--ink-faint); }
-  .brand:focus-visible { background: none; outline-offset: 4px; }
+  .brand-mark {
+    width: 30px; height: 30px; flex: 0 0 auto;
+    color: var(--accent);
+    filter: drop-shadow(0 0 5px rgba(63, 232, 114, .35));
+    transition: transform .15s;
+  }
+  .brand:hover .brand-mark { transform: scale(1.06); }
+  .brand:focus-visible { background: none; outline-offset: 4px; border-radius: 4px; }
 
   .nav {
     display: flex; gap: .15rem 1rem; flex-wrap: wrap;
@@ -71,10 +82,10 @@ const isActive = (href: string) =>
     text-decoration: none; padding: .15em .35em;
     border: 1px dashed transparent; border-radius: 2px;
   }
-  .nav-a:hover { color: var(--amber); }
+  .nav-a:hover { color: var(--accent); }
   .nav-a.on {
-    color: var(--amber);
-    border-color: var(--amber-deep);
+    color: var(--accent);
+    border-color: var(--accent-deep);
   }
 
   .ksearch {
@@ -84,8 +95,8 @@ const isActive = (href: string) =>
     background: var(--bg-1); border: 1px solid var(--line);
     border-radius: 3px; padding: .35rem .55rem; cursor: pointer;
   }
-  .ksearch:hover { border-color: var(--amber-deep); color: var(--ink-soft); }
-  .ks-lead { color: var(--amber-deep); }
+  .ksearch:hover { border-color: var(--accent-deep); color: var(--ink-soft); }
+  .ks-lead { color: var(--accent-deep); }
   .kbd {
     font-family: var(--mono); font-size: .68rem;
     color: var(--ink-soft); background: var(--bg-2);
@@ -104,7 +115,7 @@ const isActive = (href: string) =>
   .kpal-box {
     width: min(640px, 100%);
     background: var(--panel);
-    border: 1px solid var(--amber-deep);
+    border: 1px solid var(--accent-deep);
     box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 20px 60px rgba(0,0,0,.6);
   }
   .kpal-top {
@@ -129,7 +140,7 @@ const isActive = (href: string) =>
   .k-item[aria-selected='true'], .k-item:hover {
     background: var(--bg-2); border-color: var(--line);
   }
-  .k-item .k-file { color: var(--amber); font-size: .84rem; }
+  .k-item .k-file { color: var(--accent); font-size: .84rem; }
   .k-item .k-meta { color: var(--ink-faint); font-size: .74rem; margin-left: auto; white-space: nowrap; }
   .k-empty { padding: .8rem .6rem; color: var(--ink-faint); font-size: .84rem; }
   .kpal-foot {

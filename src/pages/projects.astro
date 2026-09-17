@@ -23,17 +23,21 @@ const shortRepo = (url: string) => url.replace(/^https?:\/\//, '');
   <section class="head" aria-labelledby="projects-h">
     <Prompt cmd="ls ~/tools/" cursor={true} />
     <h1 id="projects-h" class="page-h">./projects</h1>
-    <p class="lead">Small tools and configs I actually use, the glue scripts and
-      dotfiles I got tired of re-typing on every box. Nothing here is a demo;
-      if it's listed, it's on a real VM somewhere.</p>
+    <p class="lead">Small tools and configs I actually use.</p>
   </section>
 
   <hr class="hr" />
 
   <!-- ===== TOOLS ===== -->
   <section aria-labelledby="bin">
-    <Prompt cmd={`ls -l ~/tools/ | sort -k2 · ${projects.length} entries`} />
+    <Prompt cmd={`ls -l ~/tools/ | sort -k2 · ${projects.length} ${projects.length === 1 ? 'entry' : 'entries'}`} />
     <h2 id="bin" class="sec-h">// bin</h2>
+
+    {projects.length === 0 && (
+      <p class="empty faint">
+        <span class="e-prompt">$</span> ls ~/tools/ · nothing published yet. Tools ship here once they're worth cloning.
+      </p>
+    )}
 
     <ol class="tools">
       {projects.map((p) => {
@@ -80,7 +84,9 @@ const shortRepo = (url: string) => url.replace(/^https?:\/\//, '');
       })}
     </ol>
 
-    <p class="foot faint">// each of these earns its place by saving me keystrokes, not stars</p>
+    {projects.length > 0 && (
+      <p class="foot faint">// each of these earns its place by saving me keystrokes, not stars</p>
+    )}
   </section>
 </BaseLayout>
 
@@ -90,8 +96,14 @@ const shortRepo = (url: string) => url.replace(/^https?:\/\//, '');
 
   .sec-h {
     font-family: var(--mono); font-weight: 600; font-size: 1.05rem;
-    color: var(--amber); text-shadow: none; letter-spacing: .02em;
+    color: var(--accent); text-shadow: none; letter-spacing: .02em;
   }
+
+  .empty {
+    margin-top: 1.1rem; font-size: .85rem; line-height: 1.6;
+    padding: .9rem 1rem; border: 1px dashed var(--line); background: var(--bg-1);
+  }
+  .empty .e-prompt { color: var(--accent-deep); }
 
   .tools {
     list-style: none; margin: 1.2rem 0 0; padding: 0;
@@ -109,10 +121,10 @@ const shortRepo = (url: string) => url.replace(/^https?:\/\//, '');
     clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
     scroll-margin-top: 5rem;
   }
-  .tool:hover { border-color: var(--amber-deep); }
+  .tool:hover { border-color: var(--accent-deep); }
   .tool:target {
-    border-color: var(--amber);
-    box-shadow: 0 0 0 1px var(--amber-deep);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-deep);
   }
 
   .tool-h {
@@ -125,12 +137,12 @@ const shortRepo = (url: string) => url.replace(/^https?:\/\//, '');
   .dollar { font-size: .8rem; }
   .name {
     font-family: var(--mono); font-weight: 600; font-size: .92rem;
-    color: var(--amber); word-break: break-word;
+    color: var(--accent); word-break: break-word;
   }
 
   /* status badges, reuse .badge box, colour by state */
   .st { margin-left: auto; }
-  .st-wip      { color: var(--amber); border-color: var(--amber-deep); }
+  .st-wip      { color: var(--accent); border-color: var(--accent-deep); }
   .st-active   { color: var(--done);  border-color: color-mix(in srgb, var(--done) 40%, var(--line)); }
   .st-stable   { color: var(--done);  border-color: color-mix(in srgb, var(--done) 55%, var(--line)); }
   .st-archived { color: var(--ink-faint); border-color: var(--line); }
@@ -154,13 +166,13 @@ const shortRepo = (url: string) => url.replace(/^https?:\/\//, '');
   }
   .clone .git { font-size: .74rem; white-space: nowrap; }
   .clone .repo {
-    color: var(--amber); text-decoration: underline;
-    text-decoration-color: var(--amber-deep); text-underline-offset: 3px;
+    color: var(--accent); text-decoration: underline;
+    text-decoration-color: var(--accent-deep); text-underline-offset: 3px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .clone:hover .repo { text-decoration-color: var(--amber); }
-  .clone .arr { color: var(--amber-deep); }
-  .clone:hover .arr { color: var(--amber); }
+  .clone:hover .repo { text-decoration-color: var(--accent); }
+  .clone .arr { color: var(--accent-deep); }
+  .clone:hover .arr { color: var(--accent); }
   .norepo { font-size: .76rem; }
 
   .foot { margin-top: 1.1rem; font-size: .76rem; }

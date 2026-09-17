@@ -125,7 +125,7 @@ const toc = headings.filter((h) => h.depth === 2);
 
   .toc {
     border: 1px solid var(--line);
-    border-left: 2px solid var(--amber-deep);
+    border-left: 2px solid var(--accent-deep);
     background: var(--bg-1);
     padding: .8rem 1rem;
     margin-bottom: 1.6rem;
@@ -135,7 +135,7 @@ const toc = headings.filter((h) => h.depth === 2);
   .toc-h { font-size: .74rem; letter-spacing: .1em; margin: 0 0 .5rem; }
   .toc ol { margin: 0; padding-left: 1.2rem; display: grid; gap: .25rem; }
   .toc li { color: var(--ink-soft); }
-  .toc a { text-decoration-color: var(--amber-deep); }
+  .toc a { text-decoration-color: var(--accent-deep); }
 
   .pager {
     display: grid;
@@ -149,14 +149,14 @@ const toc = headings.filter((h) => h.depth === 2);
     /* clipped corner, matching the case-file cards */
     clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
   }
-  .pg:hover { border-color: var(--amber-deep); }
+  .pg:hover { border-color: var(--accent-deep); }
   .pg.next { text-align: right; }
   .pg-dir { font-size: .74rem; letter-spacing: .08em; }
   .pg-t {
     font-family: var(--mono); font-weight: 600; font-size: .92rem;
     color: var(--ink); line-height: 1.3;
   }
-  .pg:hover .pg-t { color: var(--amber); }
+  .pg:hover .pg-t { color: var(--accent); }
   .pg-spacer { display: block; }
 
   .allback { margin-top: 1.6rem; font-size: .86rem; }

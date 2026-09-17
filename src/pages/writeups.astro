@@ -39,10 +39,7 @@ const total = cards.length;
   <section aria-labelledby="wu-h">
     <Prompt cmd="ls -t writeups/" />
     <h1 id="wu-h" class="page-h">./writeups</h1>
-    <p class="lead">
-      Every box I've rooted and every CTF I've cleared, written down step by step,
-      from recon to root, including the dead ends. If it's here, I actually did it.
-    </p>
+    <p class="lead">Every box I've rooted, written up step by step.</p>
     <p class="countline faint">
       <span class="c-prompt">$</span> ls writeups/ | wc -l <span class="c-arrow">&rarr;</span>
       <span class="amber" data-count-total>{total}</span>
@@ -122,10 +119,10 @@ const total = cards.length;
 </BaseLayout>
 
 <style>
-  .sec-h { font-family: var(--mono); font-weight: 600; font-size: 1.05rem; color: var(--amber); text-shadow: none; letter-spacing: .02em; }
+  .sec-h { font-family: var(--mono); font-weight: 600; font-size: 1.05rem; color: var(--accent); text-shadow: none; letter-spacing: .02em; }
 
   .countline { margin-top: .9rem; font-size: .82rem; letter-spacing: .02em; }
-  .countline .c-prompt { color: var(--amber-deep); }
+  .countline .c-prompt { color: var(--accent-deep); }
   .countline .c-arrow { color: var(--ink-faint); }
 
   .idx-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
@@ -153,13 +150,13 @@ const total = cards.length;
     cursor: pointer;
     transition: color .12s, border-color .12s, background .12s;
   }
-  .chip::before { content: '['; color: var(--amber-deep); margin-right: .15em; }
-  .chip::after  { content: ']'; color: var(--amber-deep); margin-left: .15em; }
-  .chip:hover { color: var(--ink); border-color: var(--amber-deep); }
+  .chip::before { content: '['; color: var(--accent-deep); margin-right: .15em; }
+  .chip::after  { content: ']'; color: var(--accent-deep); margin-left: .15em; }
+  .chip:hover { color: var(--ink); border-color: var(--accent-deep); }
   .chip.is-active {
     color: var(--bg);
-    background: var(--amber);
-    border-color: var(--amber);
+    background: var(--accent);
+    border-color: var(--accent);
     text-shadow: none;
   }
   .chip.is-active::before, .chip.is-active::after { color: var(--bg); }
@@ -186,7 +183,7 @@ const total = cards.length;
     margin-top: 1.2rem; font-size: .85rem;
     padding: .9rem 1rem; border: 1px dashed var(--line); background: var(--bg-1);
   }
-  .empty .c-prompt { color: var(--amber-deep); }
+  .empty .c-prompt { color: var(--accent-deep); }
 </style>
 
 <script>

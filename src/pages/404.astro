@@ -66,7 +66,7 @@ const exits = [
     line-height: 1.6;
   }
   .errline .sh { color: var(--red); }
-  .errline .path { color: var(--amber-dim); }
+  .errline .path { color: var(--accent-dim); }
   .errline .sep { color: var(--ink-faint); }
 
   .glitch-wrap { margin: .5rem 0 1.4rem; }
@@ -75,7 +75,7 @@ const exits = [
     font-size: clamp(5rem, 26vw, 11rem);
     line-height: .9;
     letter-spacing: .04em;
-    color: var(--amber);
+    color: var(--accent);
     text-shadow: var(--glow);
     margin: 0;
     position: relative;
@@ -97,7 +97,7 @@ const exits = [
     animation: glitch-a 3.4s steps(2, end) infinite;
   }
   .glitch::after {
-    color: var(--amber-deep);
+    color: var(--accent-deep);
     opacity: .35;
     transform: translate(2px, -1px);
     mix-blend-mode: screen;
@@ -134,8 +134,8 @@ const exits = [
     display: flex; align-items: baseline; gap: .9rem;
     padding: .7rem .4rem; text-decoration: none;
   }
-  .exits a:hover .ex-l { text-decoration: underline; text-decoration-color: var(--amber); text-underline-offset: 3px; }
-  .ex-l { color: var(--amber); font-size: 1rem; min-width: 8.5rem; }
+  .exits a:hover .ex-l { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  .ex-l { color: var(--accent); font-size: 1rem; min-width: 8.5rem; }
   .ex-note { font-size: .82rem; }
 
   .exit-code {

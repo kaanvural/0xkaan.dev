@@ -1,6 +1,6 @@
 /* ============================================================
-   0xkaan.dev, cyber-cyan CRT terminal notebook
-   Design system: cool near-black + cyan phosphor (#3fd6e6),
+   0xkaan.dev, cyber-green CRT terminal notebook
+   Design system: near-black + cyber green phosphor (#3fe872),
    dim red reserved for alert/target accents. IBM Plex Mono body,
    VT323 display. Body copy stays crisp cool grey (~12:1); glow
    is applied to headings only. All hues are driven by the --accent*
@@ -8,32 +8,32 @@
    ============================================================ */
 
 :root {
-  /* backgrounds, cool near-black */
-  --bg:        #0a0a0c;
-  --bg-1:      #0f1013;
-  --bg-2:      #14151a;
-  --panel:     #101116;
-  --line:      #24262e;
-  --line-soft: #1a1c22;
+  /* backgrounds, near-black with a faint green-neutral cast */
+  --bg:        #080b09;
+  --bg-1:      #0d110e;
+  --bg-2:      #121712;
+  --panel:     #0e120f;
+  --line:      #232b25;
+  --line-soft: #191f1b;
 
-  /* cyan phosphor accent */
-  --accent:      #3fd6e6;
-  --accent-dim:  #279aa8;
-  --accent-deep: #17626d;
+  /* cyber green phosphor accent */
+  --accent:      #3fe872;
+  --accent-dim:  #24a352;
+  --accent-deep: #14572f;
 
   /* alert / target, dim red, used sparingly */
   --red:      #ff5b52;
   --red-dim:  #b63a34;
 
   /* text, cool greys, high contrast */
-  --ink:      #e7e9ee;   /* body, ~13:1 on --bg */
-  --ink-soft: #aab0bd;   /* secondary, ~7.6:1 */
-  --ink-faint:#6f7684;   /* labels/timestamps, ~5:1, never load-bearing */
+  --ink:      #e6ebe7;   /* body, ~13:1 on --bg */
+  --ink-soft: #a6b0a9;   /* secondary, ~7.6:1 */
+  --ink-faint:#6d766f;   /* labels/timestamps, ~5:1, never load-bearing */
 
-  /* status */
-  --done:    #6fce8f;
+  /* status (teal reads distinct from the green accent) */
+  --done:    #4fd4c4;
   --active:  var(--accent);
-  --planned: #6b7180;
+  --planned: #6b756e;
 
   --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --display: 'VT323', var(--mono);
@@ -42,7 +42,7 @@
   --gutter: clamp(16px, 5vw, 64px);
   --maxw: 1080px;
 
-  --glow: 0 0 1px rgba(63,214,230,.5), 0 0 14px rgba(63,214,230,.20);
+  --glow: 0 0 1px rgba(63,232,114,.45), 0 0 14px rgba(63,232,114,.18);
 }
 
 /* Single phosphor colour, fixed dark theme (a terminal has one tube). */
@@ -74,8 +74,8 @@ body::before {
   z-index: 100;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(63, 214, 230, 0.018) 0px,
-    rgba(63, 214, 230, 0.018) 1px,
+    rgba(63, 232, 114, 0.018) 0px,
+    rgba(63, 232, 114, 0.018) 1px,
     transparent 1px,
     transparent 3px
   );
@@ -116,7 +116,7 @@ button:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  background: rgba(63, 214, 230,.06);
+  background: rgba(63, 232, 114,.06);
 }
 
 /* ---- headings (display, with glow) ---- */

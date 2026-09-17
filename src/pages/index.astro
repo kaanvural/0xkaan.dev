@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Prompt from '../components/Prompt.astro';
 import WriteupCard from '../components/WriteupCard.astro';
-import { site, stats } from '../data/site';
+import { site, achievements } from '../data/site';
 import banner from '../data/banner.txt?raw';
 
 const readMin = (body = '') => Math.max(1, Math.round(body.split(/\s+/).length / 200));
@@ -12,6 +12,24 @@ const wu = (await getCollection('writeups', (e) => !e.data.draft))
   .sort((a, b) => +b.data.date - +a.data.date);
 const notes = (await getCollection('notes', (e) => !e.data.draft))
   .sort((a, b) => +b.data.date - +a.data.date);
+
+// Real, content-derived numbers (no hand-maintained fiction).
+const nWriteups = wu.length;
+const nNotes = notes.length;
+const certsActive = achievements.filter((a) => a.status === 'in progress').length;
+const allDates = [...wu, ...notes].map((e) => +e.data.date).filter(Boolean);
+const lastEntry = allDates.length
+  ? new Date(Math.max(...allDates)).toISOString().slice(0, 10)
+  : 'never';
+
+// Fixed site launch date. Do not auto-generate; it never changes.
+const LAUNCHED = '2026-09-18';
+
+const ledger = [
+  { value: String(nWriteups), label: nWriteups === 1 ? 'writeup' : 'writeups' },
+  { value: String(nNotes), label: nNotes === 1 ? 'note' : 'notes' },
+  { value: String(certsActive), label: certsActive === 1 ? 'cert in progress' : 'certs in progress' },
+];
 
 const fileFor = (id: string) => id.replace(/[^a-z0-9]+/gi, '_').toLowerCase();
 
@@ -37,38 +55,21 @@ const latest = [
   <!-- ===== HERO ===== -->
   <section class="hero" aria-labelledby="who">
     <div class="boot" id="boot" aria-hidden="true">
-      <span>[<span class="amber">0.0021</span>] bios: amber phosphor driver loaded [ ok ]</span>
+      <span>[<span class="amber">0.0021</span>] bios: green phosphor driver loaded [ ok ]</span>
       <span>[<span class="amber">0.1174</span>] mount /home/kaan on /dev/notebook [ ok ]</span>
-      <span>[<span class="amber">0.3390</span>] integrity check: {stats[0].value} writeups, 0 excuses [ ok ]</span>
-      <span>[<span class="amber">0.4402</span>] warning: operator is <span class="red">still learning</span>, by design</span>
+      <span>[<span class="amber">0.3390</span>] index: {nWriteups} writeup{nWriteups === 1 ? '' : 's'}, {nNotes} note{nNotes === 1 ? '' : 's'} [ ok ]</span>
+      <span>[<span class="amber">0.4402</span>] online since {LAUNCHED} · {certsActive} cert{certsActive === 1 ? '' : 's'} in progress</span>
       <span>[<span class="amber">0.5810</span>] session started · reader authenticated as: guest</span>
     </div>
 
     <pre class="figlet" aria-hidden="true">{banner}</pre>
     <span class="visually-hidden" id="who">0xkaan · {site.role}</span>
 
-    <p class="kicker">senior ios dev · offensive security practitioner · self-taught</p>
-    <h1 class="headline">Break boxes.<br />Write down <span class="hl">exactly</span> how.</h1>
+    <p class="kicker">senior ios developer · offensive security practitioner</p>
 
-    <div class="hero-grid">
-      <div class="hero-copy prose">
-        <Prompt cmd="cat whoami.txt" cursor={true} />
-        {site.bio.map((p) => <p>{p}</p>)}
-        <p class="pin">“Root access is temporary. The writeup is forever.”
-          <span class="faint"> // pinned above the desk since day one</span></p>
-      </div>
-
-      <aside class="whoami" aria-label="operator metadata">
-        <div class="whoami-h faint"># whoami.yml</div>
-        <dl>
-          <div><dt>handle</dt><dd>{site.handle}</dd></div>
-          <div><dt>role</dt><dd>senior ios dev</dd></div>
-          <div><dt>path</dt><dd class="amber">offensive security</dd></div>
-          <div><dt>status</dt><dd>▲ grinding</dd></div>
-          <div><dt>last_edit</dt><dd class="faint">2026-09-17</dd></div>
-        </dl>
-        <a class="whoami-cta" href="/whoami">read full ./whoami →</a>
-      </aside>
+    <div class="hero-copy prose">
+      <Prompt cmd="cat whoami.txt" cursor={true} />
+      <p>{site.bio[0]}</p>
     </div>
   </section>
 
@@ -79,14 +80,14 @@ const latest = [
     <Prompt cmd="uptime && ls writeups/ | wc -l" />
     <h2 id="counters" class="sec-h">// counters</h2>
     <div class="ledger">
-      {stats.map((s) => (
+      {ledger.map((s) => (
         <div class="cell">
           <span class="num">{s.value}</span>
           <span class="lbl faint">{s.label}</span>
         </div>
       ))}
     </div>
-    <p class="faint hand">// counted by hand, updated when I remember</p>
+    <p class="faint hand">// pulled straight from the content, not counted by hand</p>
   </section>
 
   <hr class="hr" />
@@ -95,12 +96,18 @@ const latest = [
   <section aria-labelledby="latest">
     <Prompt cmd="ls -t writeups notes | head -3" />
     <div class="sec-row">
-      <h2 id="latest" class="sec-h">// latest_writeups</h2>
-      <a class="more" href="/writeups">all writeups →</a>
+      <h2 id="latest" class="sec-h">// latest</h2>
+      {latest.length > 0 && <a class="more" href="/writeups">all writeups →</a>}
     </div>
-    <div class="feed">
-      {latest.map((it) => <WriteupCard {...it} />)}
-    </div>
+    {latest.length > 0 ? (
+      <div class="feed">
+        {latest.map((it) => <WriteupCard {...it} />)}
+      </div>
+    ) : (
+      <p class="empty faint">
+        <span class="e-prompt">$</span> nothing indexed yet. First writeups drop here as I root boxes.
+      </p>
+    )}
   </section>
 </BaseLayout>
 
@@ -114,23 +121,14 @@ const latest = [
   .boot span { white-space: normal; }
   .figlet {
     background: none; border: 0; padding: 0; margin: 0 0 .4rem;
-    color: var(--amber); text-shadow: var(--glow);
+    color: var(--accent); text-shadow: var(--glow);
     font-size: clamp(.5rem, 2.4vw, .95rem); line-height: 1.05;
     overflow-x: auto;
   }
-  .headline {
-    margin: .3rem 0 1.8rem; max-width: 16ch;
-  }
-  .headline .hl { color: var(--red); }
-
-  .hero-grid {
-    display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    gap: clamp(1.5rem, 4vw, 3rem); align-items: start;
-  }
   .hero-copy p { margin: .8rem 0; }
-  .pin { border-left: 2px solid var(--amber-deep); padding-left: .9rem; color: var(--ink); font-style: normal; }
 
   .whoami {
+    max-width: 30rem;
     border: 1px solid var(--line); background: var(--bg-1);
     padding: .9rem 1rem 1rem; font-size: .86rem;
     position: relative;
@@ -146,12 +144,12 @@ const latest = [
   .whoami dd { margin: 0; color: var(--ink); }
   .whoami-cta { display: inline-block; margin-top: .9rem; font-size: .82rem; }
 
-  .sec-h { font-family: var(--mono); font-weight: 600; font-size: 1.05rem; color: var(--amber); text-shadow: none; letter-spacing: .02em; }
+  .sec-h { font-family: var(--mono); font-weight: 600; font-size: 1.05rem; color: var(--accent); text-shadow: none; letter-spacing: .02em; }
   .sec-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .more { font-size: .84rem; }
 
   .ledger {
-    display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.15fr;
+    display: grid; grid-template-columns: repeat(3, 1fr);
     border: 1px solid var(--line); margin-top: 1rem;
   }
   .cell {
@@ -159,7 +157,7 @@ const latest = [
     border-right: 1px dashed var(--line);
   }
   .cell:last-child { border-right: 0; }
-  .num { font-family: var(--display); font-size: 2.6rem; line-height: 1; color: var(--amber); text-shadow: var(--glow); }
+  .num { font-family: var(--display); font-size: 2.6rem; line-height: 1; color: var(--accent); text-shadow: var(--glow); }
   .lbl { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; }
   .hand { margin-top: .7rem; font-size: .76rem; }
 
@@ -167,13 +165,16 @@ const latest = [
     display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
     gap: 1rem; margin-top: 1.1rem;
   }
+  .empty {
+    margin-top: 1.1rem; font-size: .85rem; line-height: 1.6;
+    padding: .9rem 1rem; border: 1px dashed var(--line); background: var(--bg-1);
+  }
+  .empty .e-prompt { color: var(--accent-deep); }
 
   @media (max-width: 760px) {
-    .hero-grid { grid-template-columns: 1fr; }
-    .whoami { order: -1; }
-    .ledger { grid-template-columns: 1fr 1fr; }
-    .cell:nth-child(2) { border-right: 0; }
-    .cell:nth-child(1), .cell:nth-child(2) { border-bottom: 1px dashed var(--line); }
+    .ledger { grid-template-columns: 1fr; }
+    .cell { border-right: 0; border-bottom: 1px dashed var(--line); }
+    .cell:last-child { border-bottom: 0; }
   }
 </style>
 
