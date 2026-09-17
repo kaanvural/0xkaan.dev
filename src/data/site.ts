@@ -50,3 +50,15 @@ export const skills = [
 export const achievements = [
   { title: 'eJPT', status: 'in progress', note: 'target: Q4 2026' },
 ];
+
+// Giscus comments (GitHub Discussions backend). Comments stay dormant until
+// repoId/categoryId are filled with real values from https://giscus.app.
+// Requirements on GitHub: the repo must be PUBLIC, Discussions enabled, and the
+// giscus app (https://github.com/apps/giscus) installed on it.
+export const giscus = {
+  repo: 'kaanvural/0xkaan.dev',
+  repoId: 'R_kgDOUfOWWg',
+  category: 'General',
+  categoryId: 'DIC_kwDOUfOWWs4DF1cW',
+};
+

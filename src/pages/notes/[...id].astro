@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Prompt from '../../components/Prompt.astro';
+import Comments from '../../components/Comments.astro';
 
 export async function getStaticPaths() {
   const notes = await getCollection('notes', (e) => !e.data.draft);
@@ -48,6 +49,8 @@ const readMin = Math.max(1, Math.round((entry.body ?? '').split(/\s+/).length / 
     <div class="md-body">
       <Content />
     </div>
+
+    <Comments />
 
     <hr class="hr" />
 

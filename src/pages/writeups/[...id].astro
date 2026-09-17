@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Prompt from '../../components/Prompt.astro';
+import Comments from '../../components/Comments.astro';
 
 export async function getStaticPaths() {
   const entries = (await getCollection('writeups', (e) => !e.data.draft))
@@ -81,6 +82,8 @@ const toc = headings.filter((h) => h.depth === 2);
   <div class="md-body">
     <Content />
   </div>
+
+  <Comments />
 
   <hr class="hr" />
 

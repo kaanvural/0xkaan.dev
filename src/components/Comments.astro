@@ -1,0 +1,57 @@
+---
+// Giscus comments + reactions, mapped per page by pathname.
+// Renders nothing until the giscus config in site.ts has real IDs, so the site
+// never shows a broken widget while it's still being set up.
+import { giscus } from '../data/site';
+
+const configured =
+  !!giscus.repoId &&
+  !giscus.repoId.startsWith('PASTE') &&
+  !!giscus.categoryId &&
+  !giscus.categoryId.startsWith('PASTE');
+---
+{configured && (
+  <Fragment>
+    <section class="comments" aria-label="comments">
+      <hr class="hr" />
+      <p class="prompt c-head">
+        <span class="u">r00t@0xkaan.dev</span><span class="p">:~$</span>
+        <span class="c">cat comments.log</span>
+      </p>
+      <div id="giscus-mount"></div>
+    </section>
+
+    <script define:vars={{ cfg: giscus }}>
+      const mount = document.getElementById('giscus-mount');
+      if (mount) {
+        const s = document.createElement('script');
+        s.src = 'https://giscus.app/client.js';
+        const attrs = {
+          'data-repo': cfg.repo,
+          'data-repo-id': cfg.repoId,
+          'data-category': cfg.category,
+          'data-category-id': cfg.categoryId,
+          'data-mapping': 'pathname',
+          'data-strict': '1',
+          'data-reactions-enabled': '1',
+          'data-emit-metadata': '0',
+          'data-input-position': 'top',
+          'data-theme': 'transparent_dark',
+          'data-lang': 'en',
+          crossorigin: 'anonymous',
+        };
+        for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v);
+        s.async = true;
+        mount.appendChild(s);
+      }
+    </script>
+  </Fragment>
+)}
+
+<style>
+  .comments { padding-block: 0 clamp(1.4rem, 3.5vw, 2.4rem); }
+  .c-head { margin: 1.4rem 0 1rem; }
+  /* keep giscus readable/on-theme */
+  .comments :global(.giscus),
+  .comments :global(.giscus-frame) { width: 100%; }
+</style>
