@@ -4,7 +4,6 @@ import { iosSite } from '../../data/site';
 ---
 <IosLayout title="Resume" description={`Resume of ${iosSite.name}, ${iosSite.role}.`}>
   <section class="resume">
-    <p class="eyebrow">{iosSite.role}</p>
     <h1 class="page-h">{iosSite.name}</h1>
 
     <p class="lead">Full resume coming soon.</p>
@@ -20,10 +19,6 @@ import { iosSite } from '../../data/site';
 
 <style>
   .resume { padding-top: clamp(2rem, 6vw, 4.5rem); max-width: 46rem; }
-  .eyebrow {
-    font-size: .8rem; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--accent); margin: 0 0 1rem; font-weight: 600;
-  }
   .lead { margin-top: 1.4rem; font-size: 1.1rem; color: var(--ink); }
   .note { margin-top: .6rem; color: var(--ink-soft); }
 </style>
