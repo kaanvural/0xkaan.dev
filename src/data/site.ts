@@ -16,7 +16,24 @@ export const nav = [
   { href: '/whoami', label: 'whoami' },
   { href: '/writeups', label: 'writeups' },
   { href: '/notes', label: 'notes' },
-  { href: '/projects', label: 'projects' },
+];
+
+// The iOS world: Kaan Vural the senior iOS developer. Warm, professional,
+// recruiter-facing. Lives under /ios with its own beige theme.
+export const iosSite = {
+  name: 'Kaan Vural',
+  role: 'Senior iOS Developer',
+  tagline: 'I build iOS apps end to end, from the first sketch to the App Store.',
+  bio: [
+    'Senior iOS developer working in Swift and SwiftUI. I like apps that are fast, quiet, and feel obvious the first time you open them.',
+    'Most of my work is turning a rough idea into something shippable: the architecture, the details, and the unglamorous parts that make it hold up.',
+  ],
+};
+
+export const iosNav = [
+  { href: '/ios/articles', label: 'articles' },
+  { href: '/ios/projects', label: 'projects' },
+  { href: '/ios/resume', label: 'resume' },
 ];
 
 export const socials = [

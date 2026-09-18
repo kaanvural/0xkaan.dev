@@ -1,0 +1,112 @@
+/* ============================================================
+   iOS world — black on beige. The daylight half of the site:
+   warm, editorial, professional. The opposite of the terminal.
+   Scoped entirely under [data-world="ios"] so it never leaks into
+   the security (dark) world. Redefines the same token names, so the
+   shared utility classes just work in beige.
+   ============================================================ */
+
+:root[data-world='ios'] {
+  /* warm paper backgrounds */
+  --bg:        #e9e3d5;
+  --bg-1:      #f1ece0;
+  --bg-2:      #ddd6c4;
+  --panel:     #f3efe6;
+  --line:      #cec6b2;
+  --line-soft: #ddd6c6;
+
+  /* accent: a warm terracotta, used sparingly */
+  --accent:      #a24a2c;
+  --accent-dim:  #8a3f26;
+  --accent-deep: #cbb7a4;
+
+  /* alert */
+  --red:      #b23a2c;
+  --red-dim:  #8f2f24;
+
+  /* ink: near-black warm on paper */
+  --ink:      #201c16;   /* body, very high contrast on --bg */
+  --ink-soft: #4d463a;   /* secondary */
+  --ink-faint:#8a8069;   /* labels / meta */
+
+  --done:    #4f7a3f;
+  --active:  var(--accent);
+  --planned: #8a8069;
+
+  /* same monospace voice as the security side, just on paper */
+  --sans: var(--mono);
+  --serif: var(--mono);
+
+  --glow: none;
+}
+
+/* ---- base overrides for the iOS world ---- */
+[data-world='ios'] body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: 0;
+}
+
+/* kill the CRT texture and the dark corner vignette */
+[data-world='ios'] body::before { display: none; }
+[data-world='ios'] body::after { display: none; }
+
+/* headings: same mono voice as the security side, bold, on paper */
+[data-world='ios'] h1,
+[data-world='ios'] h2,
+[data-world='ios'] h3 {
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--ink);
+  text-shadow: none;
+}
+[data-world='ios'] h1 { font-size: clamp(2rem, 5.5vw, 3.2rem); }
+[data-world='ios'] h2 { font-size: clamp(1.4rem, 3.5vw, 1.9rem); }
+[data-world='ios'] h3 { font-size: clamp(1.15rem, 3vw, 1.35rem); }
+
+/* links: warm accent, underline on hover only */
+[data-world='ios'] a {
+  color: var(--accent);
+  text-decoration: none;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 3px;
+}
+[data-world='ios'] a:hover { text-decoration: underline; }
+[data-world='ios'] a:focus-visible,
+[data-world='ios'] button:focus-visible,
+[data-world='ios'] [tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* soften shared bits that assumed a dark bg */
+[data-world='ios'] code {
+  background: var(--bg-2);
+  border-color: var(--line);
+  color: var(--accent-dim);
+}
+[data-world='ios'] pre {
+  background: var(--bg-1);
+  border-color: var(--line);
+  border-left-color: var(--accent);
+}
+[data-world='ios'] .kicker,
+[data-world='ios'] .prompt { font-family: var(--mono); }
+
+/* the 👾 mascot renders in its native (untinted) purple here, not green */
+[data-world='ios'] .brand-emoji {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+/* the shared markdown body reads as an article here */
+[data-world='ios'] .md-body h2,
+[data-world='ios'] .md-body h3 { font-family: var(--serif); }
+[data-world='ios'] .md-body ul { list-style: disc; }
+[data-world='ios'] .md-body ul > li::before { content: none; }

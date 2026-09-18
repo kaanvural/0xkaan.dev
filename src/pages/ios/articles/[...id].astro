@@ -1,0 +1,101 @@
+---
+import { getCollection, render } from 'astro:content';
+import IosLayout from '../../../layouts/IosLayout.astro';
+import Comments from '../../../components/Comments.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('iosArticles', (e) => !e.data.draft);
+  return articles.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const { title, date, tags, summary, sample } = entry.data;
+const dateStr = date.toISOString().slice(0, 10);
+const readMin = Math.max(1, Math.round((entry.body ?? '').split(/\s+/).length / 200));
+---
+<IosLayout title={title} description={summary}>
+  <article class="article">
+    <p class="backline">
+      <a href="/ios/articles" class="back">← Articles</a>
+    </p>
+
+    <header class="article-h">
+      <h1 class="page-h">{title}</h1>
+      <div class="meta">
+        <span class="date faint">{dateStr}</span>
+        <span class="dot faint" aria-hidden="true">·</span>
+        <span class="read faint">~{readMin} min read</span>
+        {sample && <span class="sample faint" title="placeholder, replace before publishing">sample</span>}
+      </div>
+      {tags.length > 0 && (
+        <ul class="tags" aria-label="tags">
+          {tags.map((t) => <li class="tag">{t}</li>)}
+        </ul>
+      )}
+    </header>
+
+    <hr class="hr" />
+
+    <div class="md-body">
+      <Content />
+    </div>
+
+    <Comments />
+
+    <hr class="hr" />
+
+    <footer class="article-f">
+      <a href="/ios/articles" class="back">← all articles</a>
+    </footer>
+  </article>
+</IosLayout>
+
+<style>
+  .article { padding-block: clamp(1.5rem, 5vw, 3rem); }
+  .backline { margin: 0 0 1.4rem; }
+  .back {
+    font-size: .82rem;
+    letter-spacing: .02em;
+    text-decoration: none;
+    color: var(--ink-soft);
+  }
+  .back:hover { color: var(--accent); }
+
+  .article-h { margin-top: .4rem; }
+  .page-h { margin: 0; }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .55rem;
+    margin-top: .7rem;
+    font-size: .78rem;
+    letter-spacing: .02em;
+  }
+  .dot { opacity: .7; }
+  .sample {
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: .02em .4em;
+    font-size: .68rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    margin: .9rem 0 0;
+    padding: 0;
+  }
+
+  .article-f { margin-top: .4rem; }
+</style>

@@ -1,0 +1,171 @@
+---
+import IosLayout from '../../layouts/IosLayout.astro';
+import { iosSite, socials } from '../../data/site';
+
+// SAMPLE resume content. Replace the roles, dates and bullets below with
+// Kaan's real history. Everything here is a placeholder so the page renders
+// well before the real CV is wired in.
+const github = socials.find((s) => s.label === 'github');
+
+const experience = [
+  {
+    title: 'Senior iOS Engineer',
+    company: 'Company',
+    dates: '2023 to now',
+    bullets: [
+      'Lead a small iOS team building a SwiftUI app used by hundreds of thousands of people.',
+      'Own the app architecture, the release pipeline and the code review culture.',
+      'Cut cold start time and crash rate while shipping on a steady biweekly cadence.',
+    ],
+  },
+  {
+    title: 'iOS Engineer',
+    company: 'Company',
+    dates: '2020 to 2023',
+    bullets: [
+      'Built and shipped features across UIKit and SwiftUI in a large, mature codebase.',
+      'Introduced XCTest coverage and CI checks that caught regressions before release.',
+      'Worked closely with design to get the small interaction details right.',
+    ],
+  },
+  {
+    title: 'iOS Developer',
+    company: 'Company',
+    dates: '2018 to 2020',
+    bullets: [
+      'Delivered my first production apps in Swift, from prototype to App Store.',
+      'Learned to profile, debug and ship under real deadlines.',
+    ],
+  },
+];
+
+const skillGroups = [
+  { label: 'Languages', items: ['Swift', 'Objective-C', 'SwiftUI', 'UIKit'] },
+  { label: 'Frameworks', items: ['SwiftData', 'Core Data', 'Combine', 'async/await', 'CloudKit'] },
+  { label: 'Quality', items: ['XCTest', 'XCUITest', 'CI/CD', 'Instruments', 'Accessibility'] },
+  { label: 'Tooling', items: ['Xcode', 'Swift Package Manager', 'Git', 'Fastlane', 'TestFlight'] },
+];
+---
+<IosLayout title="Resume">
+  <!-- ===== HEADER ===== -->
+  <section class="head" aria-labelledby="cv-h">
+    <h1 id="cv-h" class="page-h">{iosSite.name}</h1>
+    <p class="role">Senior iOS Developer</p>
+    <p class="lead">
+      I ship iOS apps in Swift and SwiftUI, and I care about the small details
+      users never notice but always feel.
+    </p>
+    <p class="links">
+      {github && <a href={github.href}>GitHub</a>}
+      <span class="dot" aria-hidden="true">·</span>
+      <!-- Replace with Kaan's real contact email. -->
+      <a href="mailto:hello@example.com">hello@example.com</a>
+      <span class="dot" aria-hidden="true">·</span>
+      <a href="/ios">Back to iOS home</a>
+    </p>
+    <p class="note faint">This is placeholder content. Replace it with real dates, roles and links.</p>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== EXPERIENCE ===== -->
+  <section aria-labelledby="exp-h">
+    <h2 id="exp-h" class="sec-h">Experience</h2>
+    <ol class="roles" role="list">
+      {experience.map((role) => (
+        <li class="role-item">
+          <div class="role-top">
+            <span class="role-title">{role.title}, {role.company}</span>
+            <span class="role-dates faint">{role.dates}</span>
+          </div>
+          <ul class="role-bullets" role="list">
+            {role.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ol>
+    <p class="faint cap">Sample roles. Replace with Kaan's real history.</p>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== SKILLS ===== -->
+  <section aria-labelledby="skills-h">
+    <h2 id="skills-h" class="sec-h">Skills</h2>
+    <div class="skill-groups">
+      {skillGroups.map((group) => (
+        <div class="skill-group">
+          <span class="skill-label faint">{group.label}</span>
+          <ul class="chips" role="list">
+            {group.items.map((item) => <li><span class="tag">{item}</span></li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== EDUCATION ===== -->
+  <section aria-labelledby="edu-h">
+    <h2 id="edu-h" class="sec-h">Education</h2>
+    <p class="edu">BSc in Computer Science, University (placeholder). Replace with real details.</p>
+  </section>
+
+  <hr class="hr" />
+
+  <!-- ===== DOWNLOAD ===== -->
+  <section aria-labelledby="dl-h">
+    <h2 id="dl-h" class="sec-h">Download</h2>
+    <!-- Kaan wires this up later: point href at the real PDF, e.g. /kaan-vural-cv.pdf -->
+    <p><a class="dl-link" href="#">Download PDF</a> <span class="faint">(coming soon)</span></p>
+  </section>
+</IosLayout>
+
+<style>
+  .sec-h {
+    font-family: var(--mono); font-weight: 600; font-size: 1.05rem;
+    color: var(--accent); text-shadow: none; letter-spacing: .02em;
+    margin-bottom: 1.1rem;
+  }
+  .head { padding-top: clamp(1.5rem, 4vw, 3rem); }
+  .role {
+    margin: .5rem 0 0; font-weight: 600; color: var(--ink);
+    font-size: 1.05rem; letter-spacing: .01em;
+  }
+  .head .lead { margin-top: .9rem; }
+  .links {
+    margin-top: 1.1rem; display: flex; flex-wrap: wrap;
+    align-items: center; gap: .2rem .6rem; font-size: .95rem;
+  }
+  .links .dot { color: var(--ink-faint); }
+  .note { margin-top: 1rem; font-size: .78rem; }
+
+  /* ---- experience ---- */
+  .roles { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.6rem; }
+  .role-top {
+    display: flex; flex-wrap: wrap; justify-content: space-between;
+    align-items: baseline; gap: .2rem .8rem;
+  }
+  .role-title { color: var(--ink); font-weight: 600; }
+  .role-dates { font-size: .85rem; white-space: nowrap; }
+  .role-bullets { margin: .6rem 0 0; padding-left: 1.2rem; display: grid; gap: .35rem; }
+  .role-bullets li { color: var(--ink-soft); }
+  .cap { margin-top: 1.4rem; font-size: .78rem; }
+
+  /* ---- skills ---- */
+  .skill-groups { display: grid; gap: 1.2rem; }
+  .skill-group { display: grid; gap: .5rem; }
+  .skill-label {
+    font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
+  }
+  .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .45rem; }
+
+  /* ---- education / download ---- */
+  .edu { color: var(--ink-soft); margin: 0; }
+  .dl-link { font-weight: 600; }
+
+  @media (max-width: 480px) {
+    .role-dates { width: 100%; }
+  }
+</style>

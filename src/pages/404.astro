@@ -1,167 +1,129 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Prompt from '../components/Prompt.astro';
-import { nav } from '../data/site';
-
-// Links back into the site, home plus the two most useful nav targets.
-const notes: Record<string, string> = {
-  '/writeups': 'rooted boxes, written up',
-  '/notes': 'field notes and methodology',
-};
-const exits = [
-  { href: '/', label: './', note: 'back to home' },
-  ...nav
-    .filter((n) => n.href === '/writeups' || n.href === '/notes')
-    .map((n) => ({ href: n.href, label: `.${n.href}`, note: notes[n.href] })),
-];
+// One 404 for the whole site. Vercel serves this /404.html for every unknown
+// path, so it detects whether the request was under /ios and re-skins itself to
+// the beige iOS world; otherwise it stays in the dark security world.
+import '../styles/global.css';
+import '../styles/ios.css';
 ---
-<BaseLayout title="404">
-  <section class="e404" aria-labelledby="err-h">
-    <Prompt cmd="cat $REQUESTED_PATH" cursor={true} />
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- pick the world before paint, so there is no theme flash -->
+    <script is:inline>
+      try {
+        var p = (location.pathname || '/').replace(/\/+$/, '');
+        if (p === '/ios' || p.indexOf('/ios/') === 0) {
+          document.documentElement.setAttribute('data-world', 'ios');
+        }
+      } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="wrap e404">
+      <a class="e-brand" href="/" id="home-link" aria-label="home">
+        <span class="brand-emoji" aria-hidden="true">👾</span>
+      </a>
 
-    <p class="errline" role="alert">
-      <span class="sh">bash:</span>
-      <span class="path" id="req-path">/that/page</span><span class="sep">:</span>
-      No such file or directory
-    </p>
+      <p class="errline" id="errline" role="alert">
+        <span class="sh">bash:</span>
+        <span class="path" id="req-path">/that/page</span><span class="sep">:</span>
+        No such file or directory
+      </p>
 
-    <div class="glitch-wrap">
-      <p class="glitch" data-text="404" aria-hidden="true">404</p>
-      <h1 id="err-h" class="visually-hidden">404, page not found</h1>
+      <p class="glitch" aria-hidden="true">404</p>
+      <h1 class="visually-hidden">404, page not found</h1>
+
+      <p class="human" id="human">
+        This box doesn't exist, or you don't have the creds.
+        <span class="faint">Either way, you're back at the door.</span>
+      </p>
+
+      <nav class="exits" aria-label="ways back">
+        <ul id="exits">
+          <li><a href="/" data-home>back home</a></li>
+        </ul>
+      </nav>
     </div>
 
-    <p class="human">
-      This box doesn't exist, or you don't have the creds.
-      <span class="faint">Either way, the shell just spat you back out.</span>
-    </p>
+    <script is:inline>
+      (function () {
+        try {
+          var p = (location.pathname || '/').replace(/\/+$/, '');
+          var isIos = p === '/ios' || p.indexOf('/ios/') === 0;
 
-    <hr class="hr" />
+          var reqEl = document.getElementById('req-path');
+          if (reqEl) {
+            var clean = p.slice(0, 80).replace(/[^\w\-./~]/g, '');
+            if (clean && clean !== '/') reqEl.textContent = clean;
+          }
 
-    <Prompt cmd="ls -d ./ ./writeups ./notes" />
-    <nav class="exits" aria-label="ways back">
-      <ul>
-        {exits.map((e) => (
-          <li>
-            <a href={e.href}>
-              <span class="ex-l">{e.label}</span>
-              <span class="ex-note faint">{e.note}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+          var homeLink = document.getElementById('home-link');
+          var human = document.getElementById('human');
+          var exits = document.getElementById('exits');
 
-    <p class="exit-code faint" aria-hidden="true">exit code: 404 · signal: SIGLOST</p>
-  </section>
-</BaseLayout>
+          if (isIos) {
+            if (homeLink) homeLink.setAttribute('href', '/ios');
+            var errline = document.getElementById('errline');
+            if (errline) {
+              errline.innerHTML = 'Page not found: <span class="path"></span>';
+              errline.querySelector('.path').textContent = (reqEl && reqEl.textContent) || p;
+            }
+            if (human) human.firstChild.textContent = "That page isn't here. ";
+            if (exits) exits.innerHTML =
+              '<li><a href="/ios">iOS home</a></li>' +
+              '<li><a href="/ios/articles">articles</a></li>' +
+              '<li><a href="/ios/projects">projects</a></li>';
+          } else {
+            if (exits) exits.innerHTML =
+              '<li><a href="/">home</a></li>' +
+              '<li><a href="/writeups">writeups</a></li>' +
+              '<li><a href="/notes">notes</a></li>';
+          }
+        } catch (e) {}
+      })();
+    </script>
 
-<style>
-  .e404 { padding-top: clamp(2rem, 6vw, 4rem); max-width: var(--measure); }
+    <style>
+      .e404 { padding-top: clamp(2.5rem, 8vw, 5rem); max-width: var(--measure); }
+      .e-brand { display: inline-flex; text-decoration: none; margin-bottom: 1.6rem; }
+      .brand-emoji {
+        font-size: 2rem; line-height: 1;
+        color: transparent; text-shadow: 0 0 0 var(--accent);
+      }
+      :root[data-world='ios'] .brand-emoji { color: var(--ink); text-shadow: none; }
 
-  .errline {
-    font-size: .92rem;
-    color: var(--ink);
-    margin: .3rem 0 1.6rem;
-    word-break: break-word;
-    line-height: 1.6;
-  }
-  .errline .sh { color: var(--red); }
-  .errline .path { color: var(--accent-dim); }
-  .errline .sep { color: var(--ink-faint); }
+      .errline { font-size: .92rem; color: var(--ink); margin: 0 0 1.4rem; word-break: break-word; line-height: 1.6; }
+      .errline .sh { color: var(--red); }
+      .errline .path { color: var(--accent-dim); }
+      .errline .sep { color: var(--ink-faint); }
 
-  .glitch-wrap { margin: .5rem 0 1.4rem; }
-  .glitch {
-    font-family: var(--display);
-    font-size: clamp(5rem, 26vw, 11rem);
-    line-height: .9;
-    letter-spacing: .04em;
-    color: var(--accent);
-    text-shadow: var(--glow);
-    margin: 0;
-    position: relative;
-    display: inline-block;
-  }
-  /* Subtle chromatic-split ghosts, offset amber/red copies, kept faint. */
-  .glitch::before,
-  .glitch::after {
-    content: attr(data-text);
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-  .glitch::before {
-    color: var(--red);
-    opacity: .28;
-    transform: translate(-2px, 1px);
-    mix-blend-mode: screen;
-    animation: glitch-a 3.4s steps(2, end) infinite;
-  }
-  .glitch::after {
-    color: var(--accent-deep);
-    opacity: .35;
-    transform: translate(2px, -1px);
-    mix-blend-mode: screen;
-    animation: glitch-b 2.6s steps(2, end) infinite;
-  }
-  @keyframes glitch-a {
-    0%, 92%, 100% { transform: translate(-2px, 1px); }
-    94% { transform: translate(-4px, -1px); }
-    96% { transform: translate(1px, 2px); }
-  }
-  @keyframes glitch-b {
-    0%, 90%, 100% { transform: translate(2px, -1px); }
-    93% { transform: translate(4px, 1px); }
-    97% { transform: translate(-1px, -2px); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .glitch::before, .glitch::after { animation: none; }
-  }
+      .glitch {
+        font-family: var(--display);
+        font-size: clamp(4.5rem, 24vw, 10rem);
+        line-height: .9; letter-spacing: .04em;
+        color: var(--accent); text-shadow: var(--glow);
+        margin: 0; display: inline-block;
+      }
+      :root[data-world='ios'] .glitch {
+        font-family: var(--mono); font-weight: 600; text-shadow: none;
+      }
 
-  .human {
-    color: var(--ink);
-    font-size: 1.02rem;
-    margin: 0 0 .5rem;
-    line-height: 1.7;
-  }
-  .human .faint { display: inline; }
+      .human { color: var(--ink); font-size: 1.02rem; margin: .8rem 0 1.4rem; line-height: 1.7; }
+      .human .faint { display: inline; }
 
-  .exits ul {
-    list-style: none; margin: 1rem 0 0; padding: 0;
-    display: grid; gap: .1rem;
-  }
-  .exits li { border-bottom: 1px dashed var(--line-soft); }
-  .exits a {
-    display: flex; align-items: baseline; gap: .9rem;
-    padding: .7rem .4rem; text-decoration: none;
-  }
-  .exits a:hover .ex-l { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
-  .ex-l { color: var(--accent); font-size: 1rem; min-width: 8.5rem; }
-  .ex-note { font-size: .82rem; }
-
-  .exit-code {
-    margin-top: 1.8rem;
-    font-size: .74rem;
-    letter-spacing: .1em;
-  }
-
-  @media (max-width: 480px) {
-    .exits a { flex-direction: column; gap: .15rem; }
-    .ex-l { min-width: 0; }
-  }
-</style>
-
-<script>
-  // Reflect the actually-requested path into the error line, client-side.
-  // Guarded + sanitized so we never echo attacker-controlled markup.
-  const el = document.getElementById('req-path');
-  if (el) {
-    try {
-      let p = (location.pathname || '/').slice(0, 80);
-      // keep it terminal-plausible; strip anything that isn't a tame path char
-      p = p.replace(/[^\w\-./~]/g, '');
-      if (p && p !== '/') el.textContent = p;
-    } catch (_) {
-      /* leave the fallback path in place */
-    }
-  }
-</script>
+      .exits ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1.2rem; }
+      .exits a { font-size: 1rem; }
+    </style>
+  </body>
+</html>

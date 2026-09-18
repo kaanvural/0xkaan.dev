@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+import '../styles/ios.css';
+import Header from '../components/Header.astro';
+import { iosSite } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = iosSite.tagline } = Astro.props;
+const fullTitle = title ? `${title} · ${iosSite.name}` : `${iosSite.name} · iOS Developer`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://0xkaan.dev').href;
+---
+<!doctype html>
+<html lang="en" data-theme="dark" data-world="ios">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#e9e3d5" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <Header world="ios" />
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <div class="tailpad" aria-hidden="true"></div>
+    <style>
+      .tailpad { height: clamp(2rem, 6vw, 4rem); }
+    </style>
+  </body>
+</html>

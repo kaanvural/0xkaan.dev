@@ -1,5 +1,9 @@
 ---
-import { nav, site } from '../data/site';
+import { nav, iosNav, site, iosSite } from '../data/site';
+interface Props { world?: 'sec' | 'ios'; }
+const { world = 'sec' } = Astro.props;
+const isIos = world === 'ios';
+const items = isIos ? iosNav : nav;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (href: string) =>
   href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
@@ -7,22 +11,27 @@ const isActive = (href: string) =>
 <a class="skip" href="#main">skip to content</a>
 <header class="hdr">
   <div class="wrap hdr-in">
-    <a class="brand" href="/" aria-label={`${site.handle} home`}>
+    <a class="brand" href={isIos ? '/ios' : '/'} aria-label={isIos ? `${iosSite.name} home` : `${site.handle} home`}>
       <span class="brand-emoji" aria-hidden="true">👾</span>
     </a>
 
     <nav class="nav" aria-label="primary">
-      {nav.map((n) => (
+      {items.map((n) => (
         <a
           href={n.href}
           class:list={['nav-a', { on: isActive(n.href) }]}
           aria-current={isActive(n.href) ? 'page' : undefined}
-        >./{n.label}</a>
+        >{isIos ? n.label : `./${n.label}`}</a>
       ))}
     </nav>
 
+    <a class="wswitch" href={isIos ? '/' : '/ios'} aria-label={isIos ? 'switch to the security side' : 'switch to the iOS side'}>
+      <span class:list={['ws-seg', { on: !isIos }]}>sec</span>
+      <span class:list={['ws-seg', { on: isIos }]}>ios</span>
+    </a>
+
     <button id="k-open" class="ksearch" aria-label="Search (Ctrl+K)">
-      <span class="ks-lead">/</span> grep site…
+      <span class="ks-lead">/</span> {isIos ? 'search…' : 'grep site…'}
       <kbd class="kbd">⌘K</kbd>
     </button>
   </div>
@@ -32,7 +41,9 @@ const isActive = (href: string) =>
 <div id="kpal" class="kpal" hidden role="dialog" aria-modal="true" aria-label="Search">
   <div class="kpal-box">
     <div class="kpal-top">
-      <span class="prompt"><span class="u">r00t@0xkaan.dev</span><span class="p">:~$</span> grep -ri</span>
+      {isIos
+        ? <span class="prompt"><span class="c">search</span></span>
+        : <span class="prompt"><span class="u">r00t@0xkaan.dev</span><span class="p">:~$</span> grep -ri</span>}
       <input id="k-input" class="kpal-input" type="text" placeholder="tool, box, tag, note…" autocomplete="off" spellcheck="false" aria-label="Search query" />
       <kbd class="kbd">esc</kbd>
     </div>
@@ -96,6 +107,18 @@ const isActive = (href: string) =>
     border: 1px solid var(--line); border-radius: 3px;
     padding: .05em .35em;
   }
+
+  /* world switch: sec (here) <-> ios */
+  .wswitch {
+    display: inline-flex; align-items: center;
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 2px; text-decoration: none; background: var(--bg-1);
+    font-family: var(--mono);
+    font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
+  }
+  .wswitch:hover { border-color: var(--accent-deep); }
+  .ws-seg { padding: .22em .62em; border-radius: 999px; color: var(--ink-faint); }
+  .ws-seg.on { background: var(--accent); color: var(--bg); }
 
   /* palette */
   .kpal {
