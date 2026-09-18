@@ -94,11 +94,15 @@ const isActive = (href: string) =>
 
   .ksearch {
     display: inline-flex; align-items: center; gap: .5rem;
+    /* fixed width so "grep site…" and "search…" occupy the same space and the
+       header doesn't shift when you switch worlds */
+    min-width: 11.5rem; justify-content: flex-start;
     font-family: var(--mono); font-size: .78rem;
     color: var(--ink-faint);
     background: var(--bg-1); border: 1px solid var(--line);
     border-radius: 3px; padding: .35rem .55rem; cursor: pointer;
   }
+  .ksearch .kbd { margin-left: auto; }
   .ksearch:hover { border-color: var(--accent-deep); color: var(--ink-soft); }
   .ks-lead { color: var(--accent-deep); }
   .kbd {
