@@ -23,10 +23,10 @@ export const nav = [
 export const iosSite = {
   name: 'Kaan Vural',
   role: 'Senior iOS Developer',
-  tagline: 'I build iOS apps end to end, from the first sketch to the App Store.',
+  tagline: 'I take iOS apps from a rough idea to the App Store, and sweat every detail in between.',
   bio: [
-    'Senior iOS developer working in Swift and SwiftUI. I like apps that are fast, quiet, and feel obvious the first time you open them.',
-    'Most of my work is turning a rough idea into something shippable: the architecture, the details, and the unglamorous parts that make it hold up.',
+    'Senior iOS developer, mostly Swift and SwiftUI. I build apps that feel fast, quiet, and obvious the moment you open them.',
+    'The part I enjoy most is the messy middle: shaping a vague idea into something that ships and holds up in real hands.',
   ],
 };
 
@@ -36,11 +36,11 @@ export const iosNav = [
   { href: '/ios/resume', label: 'resume' },
 ];
 
-// iOS-side contact. Replace the placeholders with your real links.
+// iOS-side contact.
 export const iosContact = [
   { label: 'GitHub', handle: 'kaanvural', href: 'https://github.com/kaanvural' },
-  { label: 'LinkedIn', handle: 'in/kaanvural', href: 'https://www.linkedin.com/in/kaanvural' },
-  { label: 'Email', handle: 'you@example.com', href: 'mailto:you@example.com' },
+  { label: 'LinkedIn', handle: 'in/vuralnkaan', href: 'https://www.linkedin.com/in/vuralnkaan/' },
+  { label: 'Email', handle: 'vuralnkaan@gmail.com', href: 'mailto:vuralnkaan@gmail.com' },
 ];
 
 export const socials = [
