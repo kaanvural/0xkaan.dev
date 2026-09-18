@@ -1,6 +1,6 @@
 ---
 import IosLayout from '../../layouts/IosLayout.astro';
-import { iosSite } from '../../data/site';
+import { iosSite, iosContact } from '../../data/site';
 ---
 <IosLayout>
   <!-- ===== HERO ===== -->
@@ -12,6 +12,19 @@ import { iosSite } from '../../data/site';
     <div class="ihero-bio">
       {iosSite.bio.map((p) => <p>{p}</p>)}
     </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section class="icontact" aria-label="contact">
+    <h2 class="icontact-h">Get in touch</h2>
+    <ul class="icontact-list">
+      {iosContact.map((c) => (
+        <li>
+          <span class="ic-label">{c.label}</span>
+          <a href={c.href} rel="me noopener">{c.handle}</a>
+        </li>
+      ))}
+    </ul>
   </section>
 </IosLayout>
 
@@ -28,4 +41,10 @@ import { iosSite } from '../../data/site';
   }
   .ihero-bio { margin-top: 1.8rem; max-width: 40rem; }
   .ihero-bio p { margin: .9rem 0; color: var(--ink-soft); font-size: 1.05rem; }
+
+  .icontact { margin-top: clamp(2.5rem, 6vw, 4rem); padding-top: clamp(1.6rem, 4vw, 2.4rem); border-top: 1px solid var(--line); }
+  .icontact-h { font-size: 1.1rem; margin: 0 0 1rem; }
+  .icontact-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .icontact-list li { display: grid; grid-template-columns: 6rem 1fr; gap: .8rem; align-items: baseline; }
+  .ic-label { color: var(--ink-faint); font-size: .82rem; letter-spacing: .04em; text-transform: uppercase; }
 </style>

@@ -36,6 +36,13 @@ export const iosNav = [
   { href: '/ios/resume', label: 'resume' },
 ];
 
+// iOS-side contact. Replace the placeholders with your real links.
+export const iosContact = [
+  { label: 'GitHub', handle: 'kaanvural', href: 'https://github.com/kaanvural' },
+  { label: 'LinkedIn', handle: 'in/kaanvural', href: 'https://www.linkedin.com/in/kaanvural' },
+  { label: 'Email', handle: 'you@example.com', href: 'mailto:you@example.com' },
+];
+
 export const socials = [
   { label: 'github', handle: '@0xkaan', href: 'https://github.com/0xkaan' },
   { label: 'tryhackme', handle: '0xkaan', href: 'https://tryhackme.com/p/0xkaan' },
